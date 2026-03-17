@@ -1,0 +1,6 @@
+# Python Data Science / Ingestion setup
+pandas
+SQLAlchemy
+psycopg2-binary
+python-dotenv
+streamlit
