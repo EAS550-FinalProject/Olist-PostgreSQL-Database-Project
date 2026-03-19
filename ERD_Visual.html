@@ -60,7 +60,7 @@
 
         /* Enforce classic DB diagram solid black borders and fonts */
         svg rect.er.entityBox {
-            stroke-width: 1.5px !important;
+            stroke-width: 1.2px !important;
             stroke: #000000 !important;
             rx: 6px !important;
             ry: 6px !important;
@@ -124,7 +124,7 @@
             locations ||--o{ customers : "has"
             locations ||--o{ sellers : "has"
             customers ||--o{ orders : "places"
-            product_categories ||--o{ products : "contains"
+            product_categories |o--o{ products : "contains"
             orders ||--o{ order_items : "contains"
             products ||--o{ order_items : "appears in"
             sellers ||--o{ order_items : "fulfills"

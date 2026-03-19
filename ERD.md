@@ -7,7 +7,7 @@ erDiagram
     locations ||--o{ customers : "has"
     locations ||--o{ sellers : "has"
     customers ||--o{ orders : "places"
-    product_categories ||--o{ products : "contains"
+    product_categories |o--o{ products : "contains"
     orders ||--o{ order_items : "contains"
     products ||--o{ order_items : "appears in"
     sellers ||--o{ order_items : "fulfills"
