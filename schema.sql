@@ -1,3 +1,4 @@
+-- Drop existing tables if they exist to allow clean recreation
 DROP TABLE IF EXISTS order_reviews CASCADE;
 DROP TABLE IF EXISTS order_payments CASCADE;
 DROP TABLE IF EXISTS order_items CASCADE;
@@ -8,17 +9,20 @@ DROP TABLE IF EXISTS customers CASCADE;
 DROP TABLE IF EXISTS product_categories CASCADE;
 DROP TABLE IF EXISTS locations CASCADE;
 
+-- Master table for geographic data (ZIP codes, cities, states)
 CREATE TABLE IF NOT EXISTS locations (
     zip_code_prefix VARCHAR(10) PRIMARY KEY,
     city VARCHAR(100) NOT NULL,
     state VARCHAR(2) NOT NULL
 );
 
+-- Master table for product categories and their English translations
 CREATE TABLE IF NOT EXISTS product_categories (
     category_name VARCHAR(100) PRIMARY KEY,
     category_name_english VARCHAR(100)
 );
 
+-- Master table for customers; references locations by zip code
 CREATE TABLE IF NOT EXISTS customers (
     customer_id VARCHAR(50) PRIMARY KEY,
     customer_unique_id VARCHAR(50) NOT NULL,
@@ -26,12 +30,14 @@ CREATE TABLE IF NOT EXISTS customers (
     FOREIGN KEY (zip_code_prefix) REFERENCES locations(zip_code_prefix)
 );
 
+-- Registry of sellers; references locations by zip code
 CREATE TABLE IF NOT EXISTS sellers (
     seller_id VARCHAR(50) PRIMARY KEY,
     zip_code_prefix VARCHAR(10) NOT NULL,
     FOREIGN KEY (zip_code_prefix) REFERENCES locations(zip_code_prefix)
 );
 
+-- Product catalog including physical dimensions for shipping
 CREATE TABLE IF NOT EXISTS products (
     product_id VARCHAR(50) PRIMARY KEY,
     category_name VARCHAR(100),
@@ -42,6 +48,7 @@ CREATE TABLE IF NOT EXISTS products (
     FOREIGN KEY (category_name) REFERENCES product_categories(category_name)
 );
 
+-- Core transaction table tracking order lifecycle; references customer
 CREATE TABLE IF NOT EXISTS orders (
     order_id VARCHAR(50) PRIMARY KEY,
     customer_id VARCHAR(50) NOT NULL,
@@ -54,6 +61,8 @@ CREATE TABLE IF NOT EXISTS orders (
     FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
 );
 
+-- Bridge table resolving many-to-many relationship between orders and products
+-- Each record is a specific item in an order, fulfilled by a specific seller
 CREATE TABLE IF NOT EXISTS order_items (
     order_id VARCHAR(50),
     order_item_id INTEGER,
@@ -68,6 +77,7 @@ CREATE TABLE IF NOT EXISTS order_items (
     FOREIGN KEY (seller_id) REFERENCES sellers(seller_id)
 );
 
+-- Records payment details for an order (an order can have multiple payments)
 CREATE TABLE IF NOT EXISTS order_payments (
     order_id VARCHAR(50),
     payment_sequential INTEGER,
@@ -78,6 +88,7 @@ CREATE TABLE IF NOT EXISTS order_payments (
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
+-- Customer feedback/reviews for orders
 CREATE TABLE IF NOT EXISTS order_reviews (
     review_id VARCHAR(50),
     order_id VARCHAR(50),
@@ -90,6 +101,7 @@ CREATE TABLE IF NOT EXISTS order_reviews (
     FOREIGN KEY (order_id) REFERENCES orders(order_id)
 );
 
+-- Create indexes for performance optimization on frequently filtered columns and foreign keys
 CREATE INDEX idx_customers_zip ON customers(zip_code_prefix);
 CREATE INDEX idx_sellers_zip ON sellers(zip_code_prefix);
 CREATE INDEX idx_products_category ON products(category_name);

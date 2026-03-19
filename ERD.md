@@ -1,5 +1,82 @@
 # ERD (Entity-Relationship Diagram) – Crow's Foot Notation
 
+## Visual ERD (Renders automatically on GitHub)
+
+```mermaid
+erDiagram
+    locations ||--o{ customers : "has"
+    locations ||--o{ sellers : "has"
+    customers ||--o{ orders : "places"
+    product_categories ||--o{ products : "contains"
+    orders ||--o{ order_items : "contains"
+    products ||--o{ order_items : "appears in"
+    sellers ||--o{ order_items : "fulfills"
+    orders ||--o{ order_payments : "paid via"
+    orders ||--o{ order_reviews : "receives"
+
+    locations {
+        VARCHAR zip_code_prefix PK
+        VARCHAR city
+        VARCHAR state
+    }
+    product_categories {
+        VARCHAR category_name PK
+        VARCHAR category_name_english
+    }
+    customers {
+        VARCHAR customer_id PK
+        VARCHAR customer_unique_id
+        VARCHAR zip_code_prefix FK
+    }
+    sellers {
+        VARCHAR seller_id PK
+        VARCHAR zip_code_prefix FK
+    }
+    products {
+        VARCHAR product_id PK
+        VARCHAR category_name FK
+        INTEGER weight_g
+        INTEGER length_cm
+        INTEGER height_cm
+        INTEGER width_cm
+    }
+    orders {
+        VARCHAR order_id PK
+        VARCHAR customer_id FK
+        VARCHAR order_status
+        TIMESTAMPTZ purchase_timestamp
+        TIMESTAMPTZ approved_at
+        TIMESTAMPTZ delivered_carrier_date
+        TIMESTAMPTZ delivered_customer_date
+        TIMESTAMPTZ estimated_delivery_date
+    }
+    order_items {
+        VARCHAR order_id PK,FK
+        INTEGER order_item_id PK
+        VARCHAR product_id FK
+        VARCHAR seller_id FK
+        TIMESTAMPTZ shipping_limit_date
+        NUMERIC price
+        NUMERIC freight_value
+    }
+    order_payments {
+        VARCHAR order_id PK,FK
+        INTEGER payment_sequential PK
+        VARCHAR payment_type
+        INTEGER payment_installments
+        NUMERIC payment_value
+    }
+    order_reviews {
+        VARCHAR review_id PK
+        VARCHAR order_id PK,FK
+        INTEGER review_score
+        TEXT comment_title
+        TEXT comment_message
+        TIMESTAMPTZ creation_date
+        TIMESTAMPTZ answer_timestamp
+    }
+```
+
 ## Overall Data Model
 
 This diagram represents the complete Olist e-commerce database schema. The model is hierarchically organized around orders as the central transaction entity, with supporting master tables for locations, products, categories, customers, and sellers.

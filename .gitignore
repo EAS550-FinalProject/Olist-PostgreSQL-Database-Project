@@ -22,7 +22,8 @@ ENV/
 *.swp
 *.swo
 
-
+ERD.md
+3nf_report.md
 final_audit_report.md
 
 error_log.txt
