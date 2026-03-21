@@ -22,12 +22,10 @@ ENV/
 *.swp
 *.swo
 
-ERD.md
-3nf_report.md
+
+
 final_audit_report.md
 ERD_Visual.html
-ERD_Visual.png
-ERD_Visual.pdf
 ERD.pdf
 
 error_log.txt
