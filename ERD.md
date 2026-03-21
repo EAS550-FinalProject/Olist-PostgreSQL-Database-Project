@@ -13,7 +13,7 @@
 - **Attributes:** **`category_name_english`** (VARCHAR(100))
 
 ### 3. **customers**
-- **Primary Key:** **`customer_id`** (VARCHAR(50))
+- **Primary Key:** `customer_id` (VARCHAR(50))
 - **Attributes:** **`customer_unique_id`** (VARCHAR(50)), **`zip_code_prefix`** (FK → locations)
 
 ### 4. **sellers**
