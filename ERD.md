@@ -1,7 +1,5 @@
 # ERD (Entity-Relationship Diagram) – Crow's Foot Notation
 
-## Visual ERD (Renders automatically on GitHub)
-
 ```mermaid
 erDiagram
     locations ||--o{ customers : "has"
