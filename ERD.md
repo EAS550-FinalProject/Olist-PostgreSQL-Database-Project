@@ -1,3 +1,4 @@
+
 # ERD (Entity-Relationship Diagram) – Crow's Foot Notation
 
 
@@ -5,40 +6,40 @@
 ## Entity Definitions & Attributes
 
 ### 1. **locations**
-- **Primary Key:** **`zip_code_prefix`** (VARCHAR(10))
-- **Attributes:** **`city`** (VARCHAR(100)), **`state`** (VARCHAR(2))
+- **Primary Key:** **zip_code_prefix** (VARCHAR(10))
+- **Attributes:** **city** (VARCHAR(100)), **state** (VARCHAR(2))
 
 ### 2. **product_categories**
-- **Primary Key:** **`category_name`** (VARCHAR(100))
-- **Attributes:** **`category_name_english`** (VARCHAR(100))
+- **Primary Key:** **category_name** (VARCHAR(100))
+- **Attributes:** **category_name_english** (VARCHAR(100))
 
-### 3. **customers**
-- **Primary Key:** `customer_id` (VARCHAR(50))
-- **Attributes:** **`customer_unique_id`** (VARCHAR(50)), **`zip_code_prefix`** (FK → locations)
+ 3. **customers**
+- **Primary Key:** **customer_id** (VARCHAR(50))
+- **Attributes:** **customer_unique_id** (VARCHAR(50)), **zip_code_prefix** (FK → locations)
 
 ### 4. **sellers**
-- **Primary Key:** **`seller_id`** (VARCHAR(50))
-- **Attributes:** **`zip_code_prefix`** (FK → locations)
+- **Primary Key:** **seller_id** (VARCHAR(50))
+- **Attributes:** **zip_code_prefix** (FK → locations)
 
 ### 5. **products**
-- **Primary Key:** **`product_id`** (VARCHAR(50))
-- **Attributes:** **`category_name`** (FK → product_categories), **`weight_g`**, **`length_cm`**, **`height_cm`**, **`width_cm`**
+- **Primary Key:** **product_id** (VARCHAR(50))
+- **Attributes:** **category_name** (FK → product_categories), **weight_g**, **length_cm**, **height_cm**, **width_cm**
 
 ### 6. **orders**
-- **Primary Key:** **`order_id`** (VARCHAR(50))
-- **Attributes:** **`customer_id`** (FK), **`order_status`**, **`purchase_timestamp`**, **`approved_at`**, **`delivered_carrier_date`**, **`delivered_customer_date`**, **`estimated_delivery_date`**
+- **Primary Key:** **order_id** (VARCHAR(50))
+- **Attributes:** **customer_id** (FK), **order_status**, **purchase_timestamp**, **approved_at**, **delivered_carrier_date**, **delivered_customer_date**, **estimated_delivery_date**
 
 ### 7. **order_items** (Bridge/Fact Table)
-- **Primary Key:** Composite (**`order_id`**, **`order_item_id`**)
-- **Attributes:** **`product_id`** (FK), **`seller_id`** (FK), **`shipping_limit_date`**, **`price`**, **`freight_value`**
+- **Primary Key:** Composite (**order_id**, **order_item_id**)
+- **Attributes:** **product_id** (FK), **seller_id** (FK), **shipping_limit_date**, **price**, **freight_value**
 
 ### 8. **order_payments**
-- **Primary Key:** Composite (**`order_id`**, **`payment_sequential`**)
-- **Attributes:** **`payment_type`**, **`payment_installments`**, **`payment_value`**
+- **Primary Key:** Composite (**order_id**, **payment_sequential**)
+- **Attributes:** **payment_type**, **payment_installments**, **payment_value**
 
 ### 9. **order_reviews**
-- **Primary Key:** Composite (**`review_id`**, **`order_id`**)
-- **Attributes:** **`review_score`**, **`comment_title`**, **`comment_message`**, **`creation_date`**, **`answer_timestamp`**
+- **Primary Key:** Composite (**review_id**, **order_id**)
+- **Attributes:** **review_score**, **comment_title**, **comment_message**, **creation_date**, **answer_timestamp**
 
 ---
 
