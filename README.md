@@ -1,20 +1,20 @@
 # Olist PostgreSQL Database Project (Phase 1)
 **Entity-Relationship Modeling & Cloud Data Ingestion**
 
-Hey! Here is my implementation for Phase 1 of the E-Commerce Database Project. I took the raw Kaggle Olist dataset and turned it into a fully fleshed-out, strictly **Third Normal Form (3NF)** PostgreSQL database hosted on Neon.
+Hey! Here is our implementation for Phase 1 of the E-Commerce Database Project. We took the raw Kaggle Olist dataset and turned it into a fully fleshed-out, strictly **Third Normal Form (3NF)** PostgreSQL database hosted on Neon.
 
 ## Project Demo
-*Placeholder: [Link to Unlisted YouTube Demo]* 
+*Link to Unlisted YouTube Demo:* (https://youtu.be/almtUcIKs9A)
 
 ## Project Overview & Deliverables
 This phase covers everything from raw relational modeling to writing constraints and building out a Python ingestion pipeline that doesn't duplicate data. 
 
 **What's inside:**
-1.  **`ERD.md`**: My Crow's Foot diagram showing how everything maps together logically.
-2.  **`schema.sql`**: The DDL script I wrote to provision the actual tables in Postgres.
-3.  **`3nf_report.md`**: My write-up explaining why I made certain normalization choices and how they prevent common database anomalies.
-4.  **`ingest_data.py`**: A Pandas/SQLAlchemy ETL script. I made sure it's fully idempotent, meaning you can run it as many times as you want without messing up the database.
-5.  **`security.sql`** *(Bonus)*: A quick Role-Based Access Control setup I added to separate read-only analysts from an app user that can actually insert data.
+1.  **`ERD.md`**: Our Crow's Foot diagram showing how everything maps together logically.
+2.  **`schema.sql`**: The DDL script we wrote to provision the actual tables in Postgres.
+3.  **`3nf_report.md`**: Our write-up explaining why we made certain normalization choices and how they prevent common database anomalies.
+4.  **`ingest_data.py`**: A Pandas/SQLAlchemy ETL script. We made sure it's fully idempotent, meaning you can run it as many times as you want without messing up the database.
+5.  **`security.sql`** *(Bonus)*: A quick Role-Based Access Control setup we added to separate read-only analysts from an app user that can actually insert data.
 
 ## Folder Structure
 ```text
@@ -27,10 +27,9 @@ This phase covers everything from raw relational modeling to writing constraints
 ├── schema.sql             
 ├── security.sql           
 └── .gitignore             
-```
 
 ## Dataset Source
-I used the **Brazilian E-Commerce Public Dataset by Olist**. It's got around 100k anonymized orders from 2016-2018.
+We used the Brazilian E-Commerce Public Dataset by Olist. It contains around 100k anonymized orders from 2016 to 2018.
 *   **You can grab it here:** [Olist E-Commerce Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
 *   **Local Setup:** Just unzip the CSVs right into `./data/raw/` at the root of the project.
 
@@ -59,7 +58,7 @@ pip install -r requirements.txt
 ```
 
 ### 4. Running the Ingestion Script
-**Quick tip:** Don't hardcode your password! We rely on the `DATABASE_URL` environment variable. Make sure to use your `-pooler` connection string here so Neon doesn't get overwhelmed.
+**Quick tip:** We rely on the `DATABASE_URL` environment variable. Make sure to use your `-pooler` connection string here so Neon doesn't get overwhelmed.
 
 **Linux / macOS:**
 ```bash
@@ -74,9 +73,9 @@ python ingest_data.py
 ```
 
 #### A Note on Idempotency
-I made `ingest_data.py` totally **idempotent**. You can spam run it 100 times, and it will never duplicate a row or break the database. Here's how I did it:
-*   **Pandas Cleanup:** I explicitly run `drop_duplicates` on the primary keys in memory first.
-*   **Postgres `ON CONFLICT`:** SQLAlchemy maps my tables and writes `INSERT INTO ... ON CONFLICT (pk) DO NOTHING`. So if a row is already in the database, Postgres just quietly ignores it.
+We made ingest_data.py fully idempotent. You can run it multiple times, and it will not duplicate rows or break the database. Here is how we handled that:
+*   **Pandas Cleanup:** We explicitly run drop_duplicates on the primary keys in memory first.
+*   **Postgres `ON CONFLICT`:** SQLAlchemy maps the tables and writes INSERT INTO ... ON CONFLICT (pk) DO NOTHING. So if a row is already in the database, Postgres simply ignores it.
 
 ### 5. Automated CI/CD (GitHub Secrets)
 If you end up hooking this up to GitHub Actions:
