@@ -59,20 +59,27 @@ def idempotent_insert(table_name, df, conflict_cols=None):
 
     table = Table(table_name, metadata, autoload_with=engine)
     records = df.to_dict(orient="records")
+    
+    # Batch insert in chunks to avoid timeout
+    batch_size = 5000
+    total_rows = len(records)
+    
+    for i in range(0, total_rows, batch_size):
+        batch = records[i:i+batch_size]
+        
+        with engine.begin() as conn:
+            stmt = insert(table).values(batch)
 
-    with engine.begin() as conn:
-        stmt = insert(table).values(records)
+            if conflict_cols is None:
+                conflict_cols = [col.name for col in table.primary_key]
 
-        if conflict_cols is None:
-            conflict_cols = [col.name for col in table.primary_key]
-
-        if not conflict_cols:
-            conn.execute(stmt)
-            logging.warning(f"[{table_name}] Inserted without conflict handling.")
-        else:
-            stmt = stmt.on_conflict_do_nothing(index_elements=conflict_cols)
-            conn.execute(stmt)
-            logging.info(f"[{table_name}] Processed {len(records)} rows.")
+            if not conflict_cols:
+                conn.execute(stmt)
+                logging.warning(f"[{table_name}] Batch {i//batch_size + 1} inserted without conflict handling.")
+            else:
+                stmt = stmt.on_conflict_do_nothing(index_elements=conflict_cols)
+                conn.execute(stmt)
+                logging.info(f"[{table_name}] Batch {i//batch_size + 1}: Processed {len(batch)} rows (total: {min(i+batch_size, total_rows)}/{total_rows}).")
 
 
 def process_locations(df_customers, df_sellers):
