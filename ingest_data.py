@@ -9,8 +9,6 @@ import streamlit as st
 from dotenv import load_dotenv
 
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
 load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL") or st.secrets.get("DATABASE_URL")
 if not DATABASE_URL:
