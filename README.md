@@ -10,9 +10,9 @@ Hey! Here is our implementation for Phase 1 of the E-Commerce Database Project. 
 This phase covers everything from raw relational modeling to writing constraints and building out a Python ingestion pipeline that doesn't duplicate data. 
 
 **What's inside:**
-1.  **`ERD.md`**: Our Crow's Foot diagram showing how everything maps together logically.
+1.  **`ERD.md`** and **`Olist Database ERD.pdf`**: Our Crow's Foot diagram showing how everything maps together logically.
 2.  **`schema.sql`**: The DDL script we wrote to provision the actual tables in Postgres.
-3.  **`3nf_report.md`**: Our write-up explaining why we made certain normalization choices and how they prevent common database anomalies.
+3.  **`3nf_report.pdf`**: Our write-up explaining why we made certain normalization choices and how they prevent common database anomalies.
 4.  **`ingest_data.py`**: A Pandas/SQLAlchemy ETL script. We made sure it's fully idempotent, meaning you can run it as many times as you want without messing up the database.
 5.  **`security.sql`** *(Bonus)*: A quick Role-Based Access Control setup we added to separate read-only analysts from an app user that can actually insert data.
 
