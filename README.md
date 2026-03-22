@@ -27,7 +27,7 @@ This phase covers everything from raw relational modeling to writing constraints
 ├── schema.sql             
 ├── security.sql           
 └── .gitignore             
-
+```
 ## Dataset Source
 We used the Brazilian E-Commerce Public Dataset by Olist. It contains around 100k anonymized orders from 2016 to 2018.
 *   **You can grab it here:** [Olist E-Commerce Dataset](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
@@ -68,7 +68,7 @@ python ingest_data.py
 
 **Windows (PowerShell):**
 ```powershell
-$env:DATABASE_URL="postgresql://user:password@ep-pooler-hostname.neon.tech/dbname?sslmode=require"
+$env:DATABASE_URL="postgresql://user:password@ep-pooler-hostname.neon.tech/dbname?sslmode=require"   #sample url
 python ingest_data.py
 ```
 
@@ -77,10 +77,19 @@ We made ingest_data.py fully idempotent. You can run it multiple times, and it w
 *   **Pandas Cleanup:** We explicitly run drop_duplicates on the primary keys in memory first.
 *   **Postgres `ON CONFLICT`:** SQLAlchemy maps the tables and writes INSERT INTO ... ON CONFLICT (pk) DO NOTHING. So if a row is already in the database, Postgres simply ignores it.
 
-### 5. Automated CI/CD (GitHub Secrets)
-If you end up hooking this up to GitHub Actions:
-1.  Go to your repo **Settings** > **Secrets and variables** > **Actions**.
-2.  Add a **New repository secret** called `DATABASE_URL` and drop your pooled connection string in there.
+### 5. Secure Credential Handling (GitHub Secrets)
+To ensure that no database credentials are hardcoded in the repository, we store the database connection string securely using environment variables for local development and GitHub Secrets for repository automation.
+
+For GitHub:
+1. Go to your repo **Settings** > **Secrets and variables** > **Actions**.
+2. Add a **New repository secret** called `DATABASE_URL`.
+3. Paste your pooled Neon connection string as the value.
+
+For local development:
+- Store the same connection string in a local `.env` file.
+- Make sure `.env` is included in `.gitignore` so it is not committed.
+
+This keeps credentials out of the codebase and aligns with the Phase 1 security requirement.
 
 ---
 
