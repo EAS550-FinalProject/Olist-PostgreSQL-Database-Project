@@ -4,7 +4,7 @@
 Hey! Here is our implementation for Phase 1 of the E-Commerce Database Project. We took the raw Kaggle Olist dataset and turned it into a fully fleshed-out, strictly **Third Normal Form (3NF)** PostgreSQL database hosted on Neon.
 
 ## Project Demo
-*Link to Unlisted YouTube Demo:* (https://youtu.be/almtUcIKs9A)
+*Link to Unlisted YouTube Demo:* (https://youtu.be/NfuyvZ5eZF8)
 
 ## Project Overview & Deliverables
 This phase covers everything from raw relational modeling to writing constraints and building out a Python ingestion pipeline that doesn't duplicate data. 
@@ -96,7 +96,7 @@ This keeps credentials out of the codebase and aligns with the Phase 1 security 
 ## Neon Free-Tier Warning 
 Since Neon suspends databases to save compute hours, leaving a pool of connections open will keep the database awake and literally eat your entire free-tier quota in days.
 
-To avoid this, I specifically tuned SQLAlchemy in `ingest_data.py`:
-*   **`pool_size=2` & `max_overflow=5`**: Keeps the connection count super low.
+To avoid this, we specifically tuned SQLAlchemy in `ingest_data.py`:
+*   **`pool_size=2` & `max_overflow=5`**: Keeps the connection count very low.
 *   **`pool_recycle=300`**: Kills any dormant connection older than 5 minutes so Neon can go to sleep when we're not actively ingesting.
 *   **`pool_pre_ping=True`**: Double-checks if the connection is alive before firing a query, which stops cold-start crashes.
