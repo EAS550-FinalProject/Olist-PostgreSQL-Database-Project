@@ -9,7 +9,7 @@ jobs:
     name: SQL Lint (SQLFluff)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -20,13 +20,13 @@ jobs:
         run: pip install sqlfluff sqlfluff-templater-dbt dbt-core dbt-postgres
 
       - name: Lint SQL files
-        run: sqlfluff lint olist_dbt/models/ --dialect postgres
+        run: sqlfluff lint olist_dbt/models/
 
   dbt-test:
     name: dbt Build & Test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python
         uses: actions/setup-python@v5

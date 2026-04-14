@@ -46,11 +46,7 @@ select
     p.payment_types,
     r.avg_review_score,
     r.review_count,
-    case
-        when o.order_delivered_customer_date <= o.order_estimated_delivery_date
-            then true
-        else false
-    end as delivered_on_time
+    o.order_delivered_customer_date <= o.order_estimated_delivery_date as delivered_on_time
 from order_items as oi
 inner join orders as o
     on oi.order_id = o.order_id

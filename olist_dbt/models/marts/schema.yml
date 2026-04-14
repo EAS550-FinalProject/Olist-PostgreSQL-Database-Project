@@ -50,13 +50,13 @@ models:
         tests:
           - unique
           - not_null
-      - name: year
+      - name: date_year
         description: "Calendar year"
         tests:
           - not_null
-      - name: month
+      - name: date_month
         description: "Calendar month (1-12)"
-      - name: quarter
+      - name: date_quarter
         description: "Calendar quarter (1-4)"
       - name: day_of_week
         description: "Day of week (0=Sunday, 6=Saturday)"
