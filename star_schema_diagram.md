@@ -47,9 +47,6 @@ erDiagram
     dim_products {
         varchar product_id PK
         varchar product_category
-        int product_name_length
-        int product_description_length
-        int product_photos_qty
         int product_weight_g
         int product_length_cm
         int product_height_cm
@@ -58,10 +55,10 @@ erDiagram
 
     dim_dates {
         date date_key PK
-        int year
-        int quarter
-        int month
-        int day
+        int date_year
+        int date_quarter
+        int date_month
+        int date_day_of_month
         int day_of_week
         varchar day_name
         varchar month_name
