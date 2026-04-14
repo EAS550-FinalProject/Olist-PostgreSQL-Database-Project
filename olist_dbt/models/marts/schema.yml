@@ -1,0 +1,131 @@
+version: 2
+
+models:
+  - name: dim_customers
+    description: "Customer dimension with geographic attributes"
+    columns:
+      - name: customer_id
+        description: "Primary key - unique customer identifier per order"
+        tests:
+          - unique
+          - not_null
+      - name: customer_unique_id
+        description: "Unique customer identifier across orders"
+        tests:
+          - not_null
+      - name: customer_city
+        description: "Customer city from location lookup"
+      - name: customer_state
+        description: "Customer state from location lookup"
+
+  - name: dim_sellers
+    description: "Seller dimension with geographic attributes"
+    columns:
+      - name: seller_id
+        description: "Primary key - unique seller identifier"
+        tests:
+          - unique
+          - not_null
+      - name: seller_city
+        description: "Seller city from location lookup"
+      - name: seller_state
+        description: "Seller state from location lookup"
+
+  - name: dim_products
+    description: "Product dimension with category and physical attributes"
+    columns:
+      - name: product_id
+        description: "Primary key - unique product identifier"
+        tests:
+          - unique
+          - not_null
+      - name: product_category
+        description: "Product category name in English"
+
+  - name: dim_dates
+    description: "Date dimension generated from order purchase timestamps"
+    columns:
+      - name: date_key
+        description: "Primary key - calendar date"
+        tests:
+          - unique
+          - not_null
+      - name: year
+        description: "Calendar year"
+        tests:
+          - not_null
+      - name: month
+        description: "Calendar month (1-12)"
+      - name: quarter
+        description: "Calendar quarter (1-4)"
+      - name: day_of_week
+        description: "Day of week (0=Sunday, 6=Saturday)"
+
+  - name: dim_locations
+    description: "Location dimension with city and state"
+    columns:
+      - name: zip_code_prefix
+        description: "Primary key - zip code prefix"
+        tests:
+          - unique
+          - not_null
+      - name: city
+        description: "City name"
+      - name: state
+        description: "State abbreviation"
+
+  - name: fact_order_items
+    description: "Fact table at order line item grain, linking to all dimensions"
+    columns:
+      - name: order_id
+        description: "Order identifier (FK to orders)"
+        tests:
+          - not_null
+      - name: order_item_id
+        description: "Sequential item number within order"
+        tests:
+          - not_null
+      - name: product_id
+        description: "FK to dim_products"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_products')
+              field: product_id
+      - name: seller_id
+        description: "FK to dim_sellers"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_sellers')
+              field: seller_id
+      - name: customer_id
+        description: "FK to dim_customers"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customers')
+              field: customer_id
+      - name: order_date_key
+        description: "FK to dim_dates"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_dates')
+              field: date_key
+      - name: order_status
+        description: "Current order status"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['delivered', 'shipped', 'canceled', 'unavailable', 'invoiced', 'processing', 'created', 'approved']
+      - name: price
+        description: "Item price in BRL"
+        tests:
+          - not_null
+      - name: freight_value
+        description: "Freight cost for this item in BRL"
+        tests:
+          - not_null
+      - name: avg_review_score
+        description: "Average review score for the order (1-5)"
