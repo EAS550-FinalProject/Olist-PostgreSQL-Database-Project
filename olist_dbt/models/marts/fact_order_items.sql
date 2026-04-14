@@ -31,7 +31,6 @@ select
     oi.product_id,
     oi.seller_id,
     o.customer_id,
-    o.order_purchase_timestamp::date as order_date_key,
     o.order_status,
     o.order_purchase_timestamp,
     o.order_approved_at,
@@ -40,12 +39,13 @@ select
     o.order_estimated_delivery_date,
     oi.price,
     oi.freight_value,
-    oi.price + oi.freight_value as total_item_value,
     p.total_payment_value as order_payment_value,
     p.payment_count,
     p.payment_types,
     r.avg_review_score,
     r.review_count,
+    o.order_purchase_timestamp::date as order_date_key,
+    oi.price + oi.freight_value as total_item_value,
     o.order_delivered_customer_date <= o.order_estimated_delivery_date as delivered_on_time
 from order_items as oi
 inner join orders as o
