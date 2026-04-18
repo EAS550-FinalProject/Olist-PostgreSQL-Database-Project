@@ -34,3 +34,4 @@ error_log.txt
 olist_dbt/target/
 olist_dbt/logs/
 olist_dbt/.user.yml
+.DS_Store

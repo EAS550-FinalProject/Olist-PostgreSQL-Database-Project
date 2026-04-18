@@ -12,8 +12,10 @@ with customer_orders as (
         max(o.purchase_timestamp) as last_purchase_date,
         min(o.purchase_timestamp) as first_purchase_date
     from customers c
-    inner join orders o on c.customer_id = o.customer_id
-    inner join order_items oi on o.order_id = oi.order_id
+    inner join orders o
+        on c.customer_id = o.customer_id
+    inner join order_items oi
+        on o.order_id = oi.order_id
     where o.order_status = 'delivered'
     group by c.customer_unique_id
 ),
@@ -26,12 +28,12 @@ rfm_scores as (
         total_spent,
         last_purchase_date,
         first_purchase_date,
-        -- Recency: days since last purchase (lower = more recent = better)
-        extract(day from (
-            (select max(purchase_timestamp) from orders)
-            - last_purchase_date
-        ))::int as recency_days,
-        -- NTILE window functions for scoring
+        extract(
+            day from (
+                (select max(purchase_timestamp) from orders)
+                - last_purchase_date
+            )
+        )::int as recency_days,
         ntile(4) over (order by last_purchase_date asc) as recency_score,
         ntile(4) over (order by total_orders asc) as frequency_score,
         ntile(4) over (order by total_spent asc) as monetary_score
@@ -62,11 +64,11 @@ rfm_segments as (
 select
     customer_segment,
     count(*) as customer_count,
-    round(avg(recency_days), 1) as avg_recency_days,
-    round(avg(total_orders), 2) as avg_orders,
-    round(avg(total_spent)::numeric, 2) as avg_total_spent,
-    round(min(total_spent)::numeric, 2) as min_spent,
-    round(max(total_spent)::numeric, 2) as max_spent
+    round(avg(recency_days),1) as avg_recency_days,
+    round(avg(total_orders),2) as avg_orders,
+    round(avg(total_spent)::numeric,2) as avg_total_spent,
+    round(min(total_spent)::numeric,2) as min_spent,
+    round(max(total_spent)::numeric,2) as max_spent
 from rfm_segments
 group by customer_segment
 order by avg_total_spent desc;
