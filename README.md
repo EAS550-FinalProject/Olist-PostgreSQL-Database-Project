@@ -196,8 +196,8 @@ This repository includes the following Phase 2 deliverables:
 │   ├── cohort_retention.sql
 │   ├── rfm_analysis.sql
 │   └── seller_performance.sql
-├── performance_tuning_report.md
-├── star_schema_diagram.md
+├── performance_tuning_report.pdf
+├── star_schema_diagram.pdf
 ├── README.md
 ├── schema.sql
 ├── ingest_data.py
