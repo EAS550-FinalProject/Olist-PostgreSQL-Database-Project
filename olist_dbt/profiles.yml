@@ -1,0 +1,14 @@
+olist_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: ep-small-mouse-ambdx195-pooler.c-5.us-east-1.aws.neon.tech
+      port: 5432
+      user: neondb_owner
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      dbname: neondb
+      schema: public
+      threads: 2
+      keepalives_idle: 0
+      sslmode: require

@@ -1,0 +1,25 @@
+version: 2
+
+sources:
+  - name: olist
+    schema: public
+    description: "Olist Brazilian E-Commerce OLTP tables"
+    tables:
+      - name: customers
+        description: "Customer profiles with location references"
+      - name: sellers
+        description: "Seller profiles with location references"
+      - name: products
+        description: "Product catalog with category and dimensions"
+      - name: product_categories
+        description: "Product category names in Portuguese and English"
+      - name: orders
+        description: "Order headers with status and timestamps"
+      - name: order_items
+        description: "Order line items with pricing and seller info"
+      - name: order_payments
+        description: "Payment records per order"
+      - name: order_reviews
+        description: "Customer review scores and comments"
+      - name: locations
+        description: "Geographic locations by zip code prefix"

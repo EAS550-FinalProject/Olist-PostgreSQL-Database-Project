@@ -1,0 +1,57 @@
+name: dbt CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  sqlfluff-lint:
+    name: SQL Lint (SQLFluff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install SQLFluff
+        run: pip install sqlfluff sqlfluff-templater-dbt dbt-core dbt-postgres
+
+      - name: Lint SQL files
+        run: sqlfluff lint olist_dbt/models/
+        env:
+          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
+
+  dbt-test:
+    name: dbt Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install dbt-core dbt-postgres
+
+      - name: Run dbt debug
+        working-directory: olist_dbt
+        run: dbt debug --profiles-dir .
+        env:
+          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
+
+      - name: Run dbt build
+        working-directory: olist_dbt
+        run: dbt build --profiles-dir .
+        env:
+          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
+
+      - name: Run dbt test
+        working-directory: olist_dbt
+        run: dbt test --profiles-dir .
+        env:
+          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}

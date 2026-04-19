@@ -29,3 +29,9 @@ ERD_Visual.html
 ERD.pdf
 
 error_log.txt
+
+# dbt build artifacts
+olist_dbt/target/
+olist_dbt/logs/
+olist_dbt/.user.yml
+.DS_Store
