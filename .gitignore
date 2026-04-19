@@ -31,7 +31,11 @@ ERD.pdf
 error_log.txt
 
 # dbt build artifacts
-olist_dbt/target/
+olist_dbt/target/*
+!olist_dbt/target/
+!olist_dbt/target/catalog.json
+!olist_dbt/target/manifest.json
+!olist_dbt/target/index.html
 olist_dbt/logs/
 olist_dbt/.user.yml
 .DS_Store
