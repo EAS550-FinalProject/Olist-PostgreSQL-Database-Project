@@ -1,0 +1,41 @@
+# Ignore raw data files and directories
+# data/
+# *.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Environment variables
+.env
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+
+
+final_audit_report.md
+ERD_Visual.html
+ERD.pdf
+
+error_log.txt
+
+# dbt build artifacts
+olist_dbt/target/*
+!olist_dbt/target/
+!olist_dbt/target/catalog.json
+!olist_dbt/target/manifest.json
+!olist_dbt/target/index.html
+olist_dbt/logs/
+olist_dbt/.user.yml
+.DS_Store
