@@ -6,7 +6,7 @@ olist_dbt:
       host: ep-small-mouse-ambdx195-pooler.c-5.us-east-1.aws.neon.tech
       port: 5432
       user: neondb_owner
-      password: "{{ env_var('DBT_PASSWORD', 'npg_G4Xa0EoceqPb') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
       dbname: neondb
       schema: public
       threads: 2
