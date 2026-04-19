@@ -1,0 +1,14 @@
+olist_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: postgres
+      host: "{{ env_var('DBT_HOST', 'ep-small-mouse-ambdx195-pooler.c-5.us-east-1.aws.neon.tech') }}"
+      port: "{{ env_var('DBT_PORT', '5432') | int }}"
+      user: "{{ env_var('DBT_USER', 'neondb_owner') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      dbname: "{{ env_var('DBT_DBNAME', 'neondb') }}"
+      schema: "{{ env_var('DBT_SCHEMA', 'public') }}"
+      threads: 2
+      keepalives_idle: 0
+      sslmode: require
