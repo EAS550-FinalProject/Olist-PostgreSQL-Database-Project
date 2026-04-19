@@ -346,6 +346,28 @@ dbt docs serve
 
 The SQL files inside the `queries/` folder can be run directly in PostgreSQL using Neon SQL Editor, pgAdmin, DBeaver, or any PostgreSQL-compatible SQL client.
 
+## Milestone Check-in
+
+Proof that Phase 2 deliverables work. Evidence lives in the `milestone_checkin/` folder — raw command outputs (`.txt`) for reproducibility and screenshots (`.png`) for CI runs.
+
+### CI/CD Pipeline — Both Jobs Passing
+SQLFluff lint and dbt Build & Test run automatically on every PR to `main`.
+
+![SQL Lint succeeded](milestone_checkin/ci_sqlfluff_pass.png)
+![dbt Build & Test succeeded](milestone_checkin/ci_dbt_build_pass.png)
+
+### dbt Tests — 26/26 Passing
+Data quality enforced via `not_null`, `unique`, `relationships`, and `accepted_values` tests.
+See `milestone_checkin/dbt_test_output.txt` for full output.
+
+### dbt Build — 40/40 Passing
+Full pipeline build (14 models + 26 tests).
+See `milestone_checkin/dbt_build_output.txt` for full output.
+
+### Advanced Analytical Queries
+Output samples from the 3 queries in `queries/` (RFM, Seller Performance, Cohort Retention).
+See `milestone_checkin/analytical_queries_output.txt`.
+
 ## Secure Credential Handling
 
 Database credentials must not be hardcoded in the repository.

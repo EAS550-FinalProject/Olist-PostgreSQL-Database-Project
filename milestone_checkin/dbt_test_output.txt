@@ -1,0 +1,64 @@
+[0m23:19:48  Running with dbt=1.11.8
+[0m23:19:49  Registered adapter: postgres=1.10.0
+[0m23:19:51  Found 14 models, 26 data tests, 9 sources, 465 macros
+[0m23:19:51  
+[0m23:19:51  Concurrency: 2 threads (target='dev')
+[0m23:19:51  
+[0m23:19:56  1 of 26 START test accepted_values_fact_order_items_order_status__delivered__shipped__canceled__unavailable__invoiced__processing__created__approved  [RUN]
+[0m23:19:56  2 of 26 START test not_null_dim_customers_customer_id .......................... [RUN]
+[0m23:19:57  2 of 26 PASS not_null_dim_customers_customer_id ................................ [[32mPASS[0m in 0.94s]
+[0m23:19:57  3 of 26 START test not_null_dim_customers_customer_unique_id ................... [RUN]
+[0m23:19:57  1 of 26 PASS accepted_values_fact_order_items_order_status__delivered__shipped__canceled__unavailable__invoiced__processing__created__approved  [[32mPASS[0m in 1.04s]
+[0m23:19:57  4 of 26 START test not_null_dim_dates_date_key ................................. [RUN]
+[0m23:19:58  3 of 26 PASS not_null_dim_customers_customer_unique_id ......................... [[32mPASS[0m in 0.43s]
+[0m23:19:58  5 of 26 START test not_null_dim_dates_date_year ................................ [RUN]
+[0m23:19:58  4 of 26 PASS not_null_dim_dates_date_key ....................................... [[32mPASS[0m in 0.44s]
+[0m23:19:58  6 of 26 START test not_null_dim_locations_zip_code_prefix ...................... [RUN]
+[0m23:19:58  5 of 26 PASS not_null_dim_dates_date_year ...................................... [[32mPASS[0m in 0.39s]
+[0m23:19:58  7 of 26 START test not_null_dim_products_product_id ............................ [RUN]
+[0m23:19:58  6 of 26 PASS not_null_dim_locations_zip_code_prefix ............................ [[32mPASS[0m in 0.65s]
+[0m23:19:58  8 of 26 START test not_null_dim_sellers_seller_id .............................. [RUN]
+[0m23:19:59  7 of 26 PASS not_null_dim_products_product_id .................................. [[32mPASS[0m in 0.41s]
+[0m23:19:59  9 of 26 START test not_null_fact_order_items_customer_id ....................... [RUN]
+[0m23:19:59  9 of 26 PASS not_null_fact_order_items_customer_id ............................. [[32mPASS[0m in 0.40s]
+[0m23:19:59  10 of 26 START test not_null_fact_order_items_freight_value .................... [RUN]
+[0m23:19:59  8 of 26 PASS not_null_dim_sellers_seller_id .................................... [[32mPASS[0m in 0.59s]
+[0m23:19:59  11 of 26 START test not_null_fact_order_items_order_date_key ................... [RUN]
+[0m23:19:59  10 of 26 PASS not_null_fact_order_items_freight_value .......................... [[32mPASS[0m in 0.44s]
+[0m23:19:59  12 of 26 START test not_null_fact_order_items_order_id ......................... [RUN]
+[0m23:19:59  11 of 26 PASS not_null_fact_order_items_order_date_key ......................... [[32mPASS[0m in 0.44s]
+[0m23:19:59  13 of 26 START test not_null_fact_order_items_order_item_id .................... [RUN]
+[0m23:20:00  12 of 26 PASS not_null_fact_order_items_order_id ............................... [[32mPASS[0m in 0.64s]
+[0m23:20:00  14 of 26 START test not_null_fact_order_items_order_status ..................... [RUN]
+[0m23:20:00  13 of 26 PASS not_null_fact_order_items_order_item_id .......................... [[32mPASS[0m in 0.62s]
+[0m23:20:00  15 of 26 START test not_null_fact_order_items_price ............................ [RUN]
+[0m23:20:00  14 of 26 PASS not_null_fact_order_items_order_status ........................... [[32mPASS[0m in 0.43s]
+[0m23:20:00  16 of 26 START test not_null_fact_order_items_product_id ....................... [RUN]
+[0m23:20:01  15 of 26 PASS not_null_fact_order_items_price .................................. [[32mPASS[0m in 0.44s]
+[0m23:20:01  17 of 26 START test not_null_fact_order_items_seller_id ........................ [RUN]
+[0m23:20:01  16 of 26 PASS not_null_fact_order_items_product_id ............................. [[32mPASS[0m in 0.43s]
+[0m23:20:01  18 of 26 START test relationships_fact_order_items_customer_id__customer_id__ref_dim_customers_  [RUN]
+[0m23:20:01  17 of 26 PASS not_null_fact_order_items_seller_id .............................. [[32mPASS[0m in 0.44s]
+[0m23:20:01  19 of 26 START test relationships_fact_order_items_order_date_key__date_key__ref_dim_dates_  [RUN]
+[0m23:20:01  18 of 26 PASS relationships_fact_order_items_customer_id__customer_id__ref_dim_customers_  [[32mPASS[0m in 0.49s]
+[0m23:20:01  20 of 26 START test relationships_fact_order_items_product_id__product_id__ref_dim_products_  [RUN]
+[0m23:20:01  19 of 26 PASS relationships_fact_order_items_order_date_key__date_key__ref_dim_dates_  [[32mPASS[0m in 0.45s]
+[0m23:20:01  21 of 26 START test relationships_fact_order_items_seller_id__seller_id__ref_dim_sellers_  [RUN]
+[0m23:20:02  20 of 26 PASS relationships_fact_order_items_product_id__product_id__ref_dim_products_  [[32mPASS[0m in 0.45s]
+[0m23:20:02  22 of 26 START test unique_dim_customers_customer_id ........................... [RUN]
+[0m23:20:02  21 of 26 PASS relationships_fact_order_items_seller_id__seller_id__ref_dim_sellers_  [[32mPASS[0m in 0.69s]
+[0m23:20:02  23 of 26 START test unique_dim_dates_date_key .................................. [RUN]
+[0m23:20:02  22 of 26 PASS unique_dim_customers_customer_id ................................. [[32mPASS[0m in 0.45s]
+[0m23:20:02  24 of 26 START test unique_dim_locations_zip_code_prefix ....................... [RUN]
+[0m23:20:03  23 of 26 PASS unique_dim_dates_date_key ........................................ [[32mPASS[0m in 0.40s]
+[0m23:20:03  25 of 26 START test unique_dim_products_product_id ............................. [RUN]
+[0m23:20:03  24 of 26 PASS unique_dim_locations_zip_code_prefix ............................. [[32mPASS[0m in 0.47s]
+[0m23:20:03  26 of 26 START test unique_dim_sellers_seller_id ............................... [RUN]
+[0m23:20:03  25 of 26 PASS unique_dim_products_product_id ................................... [[32mPASS[0m in 0.45s]
+[0m23:20:03  26 of 26 PASS unique_dim_sellers_seller_id ..................................... [[32mPASS[0m in 0.44s]
+[0m23:20:04  
+[0m23:20:04  Finished running 26 data tests in 0 hours 0 minutes and 12.13 seconds (12.13s).
+[0m23:20:04  
+[0m23:20:04  [32mCompleted successfully[0m
+[0m23:20:04  
+[0m23:20:04  Done. PASS=26 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=26
