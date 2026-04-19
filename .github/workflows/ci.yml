@@ -21,6 +21,11 @@ jobs:
 
       - name: Lint SQL files
         run: sqlfluff lint olist_dbt/models/
+<<<<<<< HEAD
+=======
+        env:
+          DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
+>>>>>>> 24e2da2f117488cefb28543b1aeb40f22a175832
 
   dbt-test:
     name: dbt Build & Test
