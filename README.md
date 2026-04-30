@@ -388,25 +388,37 @@ This Phase 2 repository builds directly on our Phase 1 work. The OLTP schema, in
 
 # Olist PostgreSQL Database Project (Phase 3)
 
-**Application Layer — Streamlit BI Dashboard on Neon**
+**Application Layer — Streamlit BI Dashboard on Neon, deployed to Render**
 
-Phase 3 turns the analytics layer from Phase 2 into a user-facing BI dashboard. The app is a multi-page Streamlit application that connects directly to the Neon Postgres database, queries the dbt mart layer (`fact_order_items` + `dim_*`) and the OLTP tables, and renders interactive visualizations.
+Phase 3 turns the analytics layer from Phase 2 into a user-facing BI dashboard. The app is a multi-page Streamlit application that connects directly to the Neon Postgres database, queries the dbt mart layer (`fact_order_items` + `dim_*`) and the OLTP tables, and renders interactive visualizations. It is wired for continuous deployment to Render through `render.yaml`.
 
-## What's Inside
+## Live Application
 
-```text
-app/
-├── streamlit_app.py          # Overview page (KPIs, monthly revenue, top categories)
-├── db.py                     # Cached SQLAlchemy engine + run_query helper
-└── pages/
-    ├── 1_RFM_Analysis.py     # Recency / Frequency / Monetary segmentation
-    ├── 2_Seller_Performance.py
-    └── 3_Cohort_Retention.py
+* **Public URL:** _add the Render URL here once deployed (e.g. `https://olist-analytics.onrender.com`)_
+* **Demo video:** _link to the unlisted YouTube end-to-end demo_
+
+> Render's free tier spins the service down after ~15 minutes of inactivity, so the first request after a quiet period can take up to 60 seconds (cold start). Subsequent requests are fast.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    A[Raw CSVs<br/>data/raw/] -->|ingest_data.py| B[(Neon Postgres<br/>OLTP, 9 tables)]
+    B -->|dbt build| C[(Mart layer<br/>fact_order_items + dim_*)]
+    B --> D[Streamlit App<br/>app/]
+    C --> D
+    D -->|Render auto-deploy| E[Public URL<br/>onrender.com]
+    F[GitHub Actions CI<br/>SQLFluff + dbt + AppTest] --> B
 ```
+
+* OLTP layer is created by `schema.sql` and loaded idempotently by `ingest_data.py`.
+* The mart layer is built by the dbt project under `olist_dbt/` (Phase 2).
+* The Streamlit app reads marts for overview KPIs and OLTP tables for the RFM, seller, and cohort analyses.
+* CI runs SQLFluff lint, `dbt build`/`dbt test`, and a Streamlit smoke test that executes every page against the live database.
 
 ## Application Features
 
-### Overview (`streamlit_app.py`)
+### Overview (`app/streamlit_app.py`)
 
 * Five KPI cards: orders, customers, gross revenue, avg review, on-time delivery rate
 * Date range slider that filters every chart and KPI on the page
@@ -414,36 +426,59 @@ app/
 * Top 10 product categories bar chart
 * Order status breakdown table
 
-### RFM Analysis (`pages/1_RFM_Analysis.py`)
+![Overview page](app/screenshots/overview.png)
 
-* NTILE-based RFM scoring (recency, frequency, monetary)
+### RFM Analysis (`app/pages/1_RFM_Analysis.py`)
+
+* NTILE-based RFM scoring (recency, frequency, monetary) over delivered orders
 * Two threshold sliders to tighten or loosen segment definitions live
-* Bar chart of customers per segment, donut chart of revenue share by segment
-* Detail table with avg recency, avg orders, avg spend per segment
+* Customers-per-segment bar chart, revenue-share donut, segment detail table
 
-### Seller Performance (`pages/2_Seller_Performance.py`)
+![RFM segmentation](app/screenshots/rfm.png)
+
+### Seller Performance (`app/pages/2_Seller_Performance.py`)
 
 * State multiselect filter and leaderboard size slider
 * KPI cards: sellers shown, combined revenue, avg review score
-* Top 20 sellers bar chart and revenue-by-state chart
-* Full leaderboard with revenue rank, state rank, and review percentile
+* Top 20 sellers bar chart, revenue-by-state chart, full ranked leaderboard
 
-### Cohort Retention (`pages/3_Cohort_Retention.py`)
+![Seller performance](app/screenshots/seller_performance.png)
 
-* Horizon slider (3-18 months since first purchase)
-* Retention heatmap (cohort month × months since first purchase) with cell labels
-* Cohort size bar chart
-* Raw cohort table
+### Cohort Retention (`app/pages/3_Cohort_Retention.py`)
+
+* Horizon slider (3–18 months since first purchase)
+* Retention heatmap (cohort month × months since first purchase) with labelled cells
+* Cohort size bar chart and raw cohort table
+
+![Cohort retention](app/screenshots/cohort_retention.png)
+
+> Screenshots live in [`app/screenshots/`](app/screenshots/). Capture instructions are in that folder's README.
+
+## Code Layout
+
+```text
+app/
+├── streamlit_app.py          # Overview page (entry script for Streamlit)
+├── db.py                     # Cached SQLAlchemy engine + run_query helper
+├── test_app.py               # AppTest smoke test for all four pages
+├── pages/
+│   ├── 1_RFM_Analysis.py
+│   ├── 2_Seller_Performance.py
+│   └── 3_Cohort_Retention.py
+└── screenshots/              # README image assets
+.streamlit/config.toml        # production-friendly Streamlit defaults
+render.yaml                   # Render Blueprint for continuous deploy
+```
 
 ## Performance & Caching
 
 All database access goes through `app/db.py`:
 
-* `@st.cache_resource` on the SQLAlchemy engine — one shared connection pool per app session
-* `pool_size=2`, `max_overflow=3`, `pool_recycle=300`, `pool_pre_ping=True` — same Neon-friendly tuning as the ingest script
+* `@st.cache_resource` on the SQLAlchemy engine — one shared connection pool per app process
+* `pool_size=2`, `max_overflow=3`, `pool_recycle=300`, `pool_pre_ping=True` — same Neon-friendly tuning as the ingest script, so idle connections drop and Neon compute can pause
 * `@st.cache_data(ttl=600)` on every query function — re-using the dashboard for 10 minutes never re-hits Neon
 
-This means a typical demo session uses only a handful of queries even with several widget interactions.
+A typical demo session issues only a handful of unique queries even with heavy widget interaction.
 
 ## Running the App Locally
 
@@ -455,7 +490,7 @@ pip install -r requirements.txt
 
 ### 2. Set the database URL
 
-Use the same Neon `-pooler` connection string as the ingest script:
+Use the same Neon `-pooler` connection string as the ingest script.
 
 **Linux / macOS:**
 
@@ -481,30 +516,45 @@ DATABASE_URL=postgresql://...
 streamlit run app/streamlit_app.py
 ```
 
-The app opens at `http://localhost:8501`. The sidebar exposes navigation between the four pages.
+The app opens at `http://localhost:8501`. Use the sidebar to navigate between Overview, RFM Analysis, Seller Performance, and Cohort Retention.
 
-## Architecture
+### 4. Run the smoke test (optional)
 
-```
-┌──────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌──────────────┐
-│  Raw CSVs    │ →  │ ingest_data.py  │ →  │ Neon Postgres   │ →  │ dbt models   │
-│ (data/raw/)  │    │ (Pandas/SQLA)   │    │ (OLTP, 9 tables)│    │ (star schema)│
-└──────────────┘    └─────────────────┘    └─────────────────┘    └──────┬───────┘
-                                                                         │
-                                                                  ┌──────▼───────┐
-                                                                  │ Streamlit    │
-                                                                  │ dashboard    │
-                                                                  │ (app/)       │
-                                                                  └──────────────┘
+```bash
+python app/test_app.py
 ```
 
-The dashboard reads from the dbt mart tables (`fact_order_items`, `dim_products`, etc.) for overview KPIs, and from the OLTP tables for the RFM / seller / cohort analyses (mirroring the Phase 2 SQL queries).
+This executes every page headlessly against the live database and fails on any uncaught exception — useful before opening a PR.
 
-## Cloud Deployment
+## Cloud Deployment to Render
 
-Deployment to Render is the next step. Required configuration when deploying:
+The repo includes a `render.yaml` Blueprint, so Render can provision the service straight from the GitHub repo with no UI clicking.
 
-* `DATABASE_URL` set in Render environment variables (never hardcoded)
-* Build command: `pip install -r requirements.txt`
-* Start command: `streamlit run app/streamlit_app.py --server.port=$PORT --server.address=0.0.0.0`
-* Free-tier note: the app cold-starts after ~15 min idle; first request after that may take up to 60 s.
+### One-time setup
+
+1. Push `main` to GitHub (Render watches the branch configured in `render.yaml`).
+2. In Render, **New → Blueprint** and point it at this repository. Render reads `render.yaml` and creates the `olist-analytics` web service.
+3. In the service's **Environment** tab, set `DATABASE_URL` to the Neon pooler connection string. (`render.yaml` declares the variable with `sync: false`, so Render prompts for it instead of reading it from source.)
+4. First build runs `pip install -r requirements.txt`; first start runs `streamlit run app/streamlit_app.py --server.port=$PORT --server.address=0.0.0.0 --server.headless=true`.
+
+### After setup
+
+Every push to `main` redeploys automatically (`autoDeploy: true` in `render.yaml`). Health checks hit `/_stcore/health` (Streamlit's built-in healthcheck endpoint).
+
+### Credential hygiene
+
+* `DATABASE_URL` is read by `app/db.py` from the environment first, then falls back to `st.secrets`. Nothing is hardcoded.
+* `.env` is gitignored. `render.yaml` uses `sync: false` so the secret is only ever entered in the Render dashboard.
+* GitHub Actions uses a `DBT_PASSWORD` repo secret (Phase 2 CI) and a `DATABASE_URL` repo secret (Phase 3 smoke test).
+
+## CI / CD Coverage
+
+`.github/workflows/ci.yml` runs three jobs on every PR to `main`:
+
+| Job | What it does | Required secret |
+| --- | --- | --- |
+| SQL Lint (SQLFluff) | Lints all dbt SQL files | `DBT_PASSWORD` |
+| dbt Build & Test | `dbt debug` → `dbt build` → `dbt test` against Neon | `DBT_PASSWORD` |
+| Streamlit App Smoke Test | Runs `app/test_app.py` (executes every page via `streamlit.testing.v1.AppTest`) against Neon | `DATABASE_URL` |
+
+If `DATABASE_URL` is not set, the smoke-test step exits 0 with a skip message instead of failing.
