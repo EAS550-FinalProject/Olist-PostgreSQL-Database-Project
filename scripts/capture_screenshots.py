@@ -23,6 +23,29 @@ PAGES = [
 ]
 
 
+def _wait_for_render(page) -> None:
+    """Wait until Streamlit has finished rendering (no running indicator, no skeletons)."""
+    page.wait_for_selector("[data-testid='stAppViewContainer']", timeout=60_000)
+    # Wait for the "Running" status pill to disappear, if present.
+    try:
+        page.wait_for_function(
+            "() => !document.querySelector('[data-testid=\"stStatusWidget\"]')"
+            " || !document.querySelector('[data-testid=\"stStatusWidget\"]').innerText.toLowerCase().includes('running')",
+            timeout=90_000,
+        )
+    except Exception:
+        pass
+    # Wait for skeleton placeholders to disappear.
+    try:
+        page.wait_for_function(
+            "() => document.querySelectorAll('[class*=\"stSkeleton\"]').length === 0",
+            timeout=90_000,
+        )
+    except Exception:
+        pass
+    page.wait_for_timeout(2500)
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     with sync_playwright() as p:
@@ -32,12 +55,15 @@ def main() -> None:
             device_scale_factor=2,
         )
         page = context.new_page()
+        # Warm cache: visit every URL once before capturing so subsequent loads are fast.
+        for _, url in PAGES:
+            page.goto(url, wait_until="domcontentloaded", timeout=120_000)
+            _wait_for_render(page)
         for filename, url in PAGES:
             target = OUT / filename
             print(f"-> {url}")
-            page.goto(url, wait_until="networkidle", timeout=120_000)
-            page.wait_for_selector("[data-testid='stAppViewContainer']", timeout=60_000)
-            page.wait_for_timeout(4000)
+            page.goto(url, wait_until="domcontentloaded", timeout=120_000)
+            _wait_for_render(page)
             page.screenshot(path=str(target), full_page=True)
             print(f"   saved {target.relative_to(OUT.parent.parent)} ({target.stat().st_size // 1024} KB)")
         browser.close()
