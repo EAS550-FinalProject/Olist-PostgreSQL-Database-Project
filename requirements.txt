@@ -3,6 +3,11 @@ pandas
 SQLAlchemy
 psycopg2-binary
 python-dotenv
+
+# Phase 3 Streamlit app
 streamlit
+altair
+
+# Phase 2 dbt
 dbt-core
 dbt-postgres

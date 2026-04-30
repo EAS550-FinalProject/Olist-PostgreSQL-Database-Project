@@ -385,3 +385,126 @@ For local development:
 ## Team Note
 
 This Phase 2 repository builds directly on our Phase 1 work. The OLTP schema, ingestion pipeline, and security setup remain part of the project and support the analytics layer developed in this phase.
+
+# Olist PostgreSQL Database Project (Phase 3)
+
+**Application Layer — Streamlit BI Dashboard on Neon**
+
+Phase 3 turns the analytics layer from Phase 2 into a user-facing BI dashboard. The app is a multi-page Streamlit application that connects directly to the Neon Postgres database, queries the dbt mart layer (`fact_order_items` + `dim_*`) and the OLTP tables, and renders interactive visualizations.
+
+## What's Inside
+
+```text
+app/
+├── streamlit_app.py          # Overview page (KPIs, monthly revenue, top categories)
+├── db.py                     # Cached SQLAlchemy engine + run_query helper
+└── pages/
+    ├── 1_RFM_Analysis.py     # Recency / Frequency / Monetary segmentation
+    ├── 2_Seller_Performance.py
+    └── 3_Cohort_Retention.py
+```
+
+## Application Features
+
+### Overview (`streamlit_app.py`)
+
+* Five KPI cards: orders, customers, gross revenue, avg review, on-time delivery rate
+* Date range slider that filters every chart and KPI on the page
+* Monthly revenue area chart (Altair)
+* Top 10 product categories bar chart
+* Order status breakdown table
+
+### RFM Analysis (`pages/1_RFM_Analysis.py`)
+
+* NTILE-based RFM scoring (recency, frequency, monetary)
+* Two threshold sliders to tighten or loosen segment definitions live
+* Bar chart of customers per segment, donut chart of revenue share by segment
+* Detail table with avg recency, avg orders, avg spend per segment
+
+### Seller Performance (`pages/2_Seller_Performance.py`)
+
+* State multiselect filter and leaderboard size slider
+* KPI cards: sellers shown, combined revenue, avg review score
+* Top 20 sellers bar chart and revenue-by-state chart
+* Full leaderboard with revenue rank, state rank, and review percentile
+
+### Cohort Retention (`pages/3_Cohort_Retention.py`)
+
+* Horizon slider (3-18 months since first purchase)
+* Retention heatmap (cohort month × months since first purchase) with cell labels
+* Cohort size bar chart
+* Raw cohort table
+
+## Performance & Caching
+
+All database access goes through `app/db.py`:
+
+* `@st.cache_resource` on the SQLAlchemy engine — one shared connection pool per app session
+* `pool_size=2`, `max_overflow=3`, `pool_recycle=300`, `pool_pre_ping=True` — same Neon-friendly tuning as the ingest script
+* `@st.cache_data(ttl=600)` on every query function — re-using the dashboard for 10 minutes never re-hits Neon
+
+This means a typical demo session uses only a handful of queries even with several widget interactions.
+
+## Running the App Locally
+
+### 1. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 2. Set the database URL
+
+Use the same Neon `-pooler` connection string as the ingest script:
+
+**Linux / macOS:**
+
+```bash
+export DATABASE_URL="postgresql://user:password@ep-pooler-hostname.neon.tech/dbname?sslmode=require"
+```
+
+**Windows (PowerShell):**
+
+```powershell
+$env:DATABASE_URL="postgresql://user:password@ep-pooler-hostname.neon.tech/dbname?sslmode=require"
+```
+
+Or place it in a local `.env` file (already gitignored):
+
+```
+DATABASE_URL=postgresql://...
+```
+
+### 3. Launch Streamlit
+
+```bash
+streamlit run app/streamlit_app.py
+```
+
+The app opens at `http://localhost:8501`. The sidebar exposes navigation between the four pages.
+
+## Architecture
+
+```
+┌──────────────┐    ┌─────────────────┐    ┌─────────────────┐    ┌──────────────┐
+│  Raw CSVs    │ →  │ ingest_data.py  │ →  │ Neon Postgres   │ →  │ dbt models   │
+│ (data/raw/)  │    │ (Pandas/SQLA)   │    │ (OLTP, 9 tables)│    │ (star schema)│
+└──────────────┘    └─────────────────┘    └─────────────────┘    └──────┬───────┘
+                                                                         │
+                                                                  ┌──────▼───────┐
+                                                                  │ Streamlit    │
+                                                                  │ dashboard    │
+                                                                  │ (app/)       │
+                                                                  └──────────────┘
+```
+
+The dashboard reads from the dbt mart tables (`fact_order_items`, `dim_products`, etc.) for overview KPIs, and from the OLTP tables for the RFM / seller / cohort analyses (mirroring the Phase 2 SQL queries).
+
+## Cloud Deployment
+
+Deployment to Render is the next step. Required configuration when deploying:
+
+* `DATABASE_URL` set in Render environment variables (never hardcoded)
+* Build command: `pip install -r requirements.txt`
+* Start command: `streamlit run app/streamlit_app.py --server.port=$PORT --server.address=0.0.0.0`
+* Free-tier note: the app cold-starts after ~15 min idle; first request after that may take up to 60 s.
