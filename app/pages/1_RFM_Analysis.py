@@ -121,8 +121,8 @@ with st.sidebar:
 
 hero(
     "Customer RFM Segmentation",
-    "Recency, Frequency, and Monetary value scoring identifies who to retain, who to win back, "
-    "and who deserves a thank-you campaign. Segments are computed live from delivered orders.",
+    "Groups customers by Recency, Frequency, and Monetary value (RFM). "
+    "Computed live from delivered orders.",
     pills=["Live OLTP query", "NTILE quartiles", "Adjustable thresholds"],
 )
 
@@ -163,9 +163,9 @@ if total_revenue and champ_count:
     pct_revenue = champ_revenue / total_revenue * 100
     multiple = pct_revenue / pct_customers if pct_customers else 0
     insight(
-        f"<strong>Champions are {pct_customers:.1f}% of customers</strong> but generate "
-        f"<strong>{pct_revenue:.1f}% of revenue</strong> — roughly {multiple:.1f}× their per-capita share. "
-        f"At Risk + Lost customers ({at_risk_count:,}) are the most addressable win-back pool."
+        f"Champions are <strong>{pct_customers:.1f}%</strong> of customers but bring in "
+        f"<strong>{pct_revenue:.1f}%</strong> of revenue (about {multiple:.1f}× their per-capita share). "
+        f"At Risk + Lost ({at_risk_count:,}) are the win-back targets."
     )
 
 st.divider()
@@ -240,9 +240,9 @@ with right:
     st.altair_chart(pie, use_container_width=True)
     if total_revenue and champ_count:
         note(
-            f"Champions punch well above their weight: <strong>{(champ_count / total_customers * 100):.1f}%</strong> "
-            f"of customers, <strong>{(champ_revenue / total_revenue * 100):.1f}%</strong> of revenue. "
-            "Losing one Champion is worth roughly losing several 'Others'."
+            f"Champions are <strong>{(champ_count / total_customers * 100):.1f}%</strong> of customers "
+            f"but make up <strong>{(champ_revenue / total_revenue * 100):.1f}%</strong> of revenue. "
+            "Losing one Champion costs the same as losing several 'Others'."
         )
 
 st.subheader("Segment Detail")

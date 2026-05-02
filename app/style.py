@@ -331,7 +331,7 @@ def caption(text: str) -> None:
     st.markdown(f'<p class="section-caption">{text}</p>', unsafe_allow_html=True)
 
 
-def note(text: str, label: str = "What this means") -> None:
+def note(text: str, label: str = "Note") -> None:
     """Interpretation note shown directly below a chart."""
     st.markdown(
         f'<div class="data-note"><span class="label">{label}</span>{text}</div>',

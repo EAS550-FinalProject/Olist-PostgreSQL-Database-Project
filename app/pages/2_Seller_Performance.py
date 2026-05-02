@@ -157,8 +157,8 @@ with st.sidebar:
 
 hero(
     "Marketplace Seller Performance",
-    "Olist hosts thousands of sellers across 27 Brazilian states. This page ranks them by gross revenue, "
-    "compares each against state peers, and surfaces review-quality outliers.",
+    "Top sellers ranked by gross revenue, with state rank and review percentile. "
+    "Filter by state in the sidebar.",
     pills=["Live OLTP", "Window functions", "State drill-down"],
 )
 
@@ -250,9 +250,8 @@ top_chart = (
 )
 st.altair_chart(top_chart, use_container_width=True)
 note(
-    "Color encodes the seller's average review score (1–5). Watch for high-revenue bars "
-    "in lighter shades — those sellers are moving volume despite mediocre reviews and "
-    "are quality-risk outliers worth investigating."
+    "Color is the seller's average review score (1–5). Lighter bars at high revenue mean "
+    "the seller is doing volume despite low reviews. Worth a closer look."
 )
 
 st.subheader("Revenue by Seller State")

@@ -393,7 +393,7 @@ This Phase 2 repository builds directly on our Phase 1 work. The OLTP schema, in
 
 # Olist PostgreSQL Database Project (Phase 3)
 
-**Application Layer — Streamlit BI Dashboard on Neon, deployed to Render**
+**Application Layer: Streamlit BI Dashboard on Neon, deployed to Render**
 
 Phase 3 turns the analytics layer from Phase 2 into a user-facing BI dashboard. The app is a multi-page Streamlit application that connects directly to the Neon Postgres database, queries the dbt mart layer (`fact_order_items` + `dim_*`) and the OLTP tables, and renders interactive visualizations. It is wired for continuous deployment to Render through `render.yaml`.
 
@@ -457,7 +457,7 @@ flowchart LR
 
 ![Cohort retention](docs/screenshots/cohort_retention.png)
 
-> Screenshots live in [`docs/screenshots/`](docs/screenshots/). Run `python scripts/capture_screenshots.py` (with the app on `:8765`) to regenerate them.
+> Screenshots live in [`docs/screenshots/`](docs/screenshots/).
 
 ## Code Layout
 
@@ -479,9 +479,9 @@ render.yaml                   # Render Blueprint for continuous deploy
 
 All database access goes through `app/db.py`:
 
-* `@st.cache_resource` on the SQLAlchemy engine — one shared connection pool per app process
-* `pool_size=2`, `max_overflow=3`, `pool_recycle=300`, `pool_pre_ping=True` — same Neon-friendly tuning as the ingest script, so idle connections drop and Neon compute can pause
-* `@st.cache_data(ttl=600)` on every query function — re-using the dashboard for 10 minutes never re-hits Neon
+* `@st.cache_resource` on the SQLAlchemy engine. One shared connection pool per app process.
+* `pool_size=2`, `max_overflow=3`, `pool_recycle=300`, `pool_pre_ping=True`. Same Neon-friendly tuning as the ingest script so idle connections drop and Neon compute can pause.
+* `@st.cache_data(ttl=600)` on every query function. Re-using the dashboard for 10 minutes never re-hits Neon.
 
 A typical demo session issues only a handful of unique queries even with heavy widget interaction.
 
@@ -529,7 +529,7 @@ The app opens at `http://localhost:8501`. Use the sidebar to navigate between Ov
 python app/test_app.py
 ```
 
-This executes every page headlessly against the live database and fails on any uncaught exception — useful before opening a PR.
+Runs every page headlessly against the live database. Fails on any uncaught exception. Useful before opening a PR.
 
 ## Cloud Deployment to Render
 

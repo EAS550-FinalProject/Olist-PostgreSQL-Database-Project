@@ -102,9 +102,8 @@ def fetch_cohorts(max_horizon: int) -> pd.DataFrame:
 
 hero(
     "Customer Cohort Retention",
-    "Each cohort is the set of customers who placed their first delivered order in a given month. "
-    "The heatmap shows the percentage of each cohort still active in subsequent months — "
-    "Olist is largely transactional, so first-purchase repeats are rare but the patterns are still informative.",
+    "Customers grouped by their first-delivered-order month. "
+    "Heatmap shows what share of each cohort comes back in later months.",
     pills=["Live OLTP", "LAG window function", "Variable horizon"],
 )
 
@@ -148,11 +147,10 @@ c4.metric(
 
 if best_m1_cohort is not None and best_m1 > 0:
     insight(
-        f"<strong>Month-1 repeat rate averages {avg_m1:.2f}%</strong> across cohorts of "
-        f"50+ customers — low, as expected for transactional commerce where most customers "
-        "buy a single item. The strongest comeback came from "
-        f"<strong>{pd.to_datetime(best_m1_cohort['cohort_month']):%b %Y}</strong> with "
-        f"{best_m1:.2f}% returning the next month."
+        f"Month-1 repeat rate averages <strong>{avg_m1:.2f}%</strong> across cohorts of 50+ customers. "
+        "Most Olist customers only buy once, so this is low across the board. "
+        f"Best month-1 came from <strong>{pd.to_datetime(best_m1_cohort['cohort_month']):%b %Y}</strong> "
+        f"at {best_m1:.2f}%."
     )
 
 st.divider()
@@ -221,9 +219,8 @@ text = (
 )
 st.altair_chart(heatmap + text, use_container_width=True)
 note(
-    "Retention drops sharply by month 1 (typically below 1%) and stays low — expected for "
-    "transactional commerce where most customers buy a single item. The empty bottom-right "
-    "triangle reflects newer cohorts that haven't had time to age a full horizon."
+    "Retention drops to under 1% by month 1 and stays there. Most Olist customers don't come back. "
+    "The empty bottom-right triangle is just newer cohorts that haven't had time to age yet."
 )
 
 col1, col2 = st.columns(2)

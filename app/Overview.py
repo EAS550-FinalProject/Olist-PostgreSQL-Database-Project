@@ -160,9 +160,8 @@ with st.sidebar:
 
 hero(
     "Olist E-Commerce Analytics",
-    "Live BI dashboard over the Brazilian E-Commerce dataset by Olist. "
-    "Explore order trends, customer segmentation, seller performance, and cohort retention "
-    "across ~100k orders from 2016 to 2018.",
+    "Dashboard for the Olist Brazilian E-Commerce dataset (~100k orders, 2016–2018). "
+    "Pages cover order trends, RFM segmentation, seller performance, and cohort retention.",
     pills=[
         "Live Neon Postgres",
         "dbt Star Schema",
@@ -246,9 +245,8 @@ with left:
         points = base.mark_circle(size=55, color=PRIMARY).encode(y="revenue:Q")
         st.altair_chart((area + points).properties(height=340), use_container_width=True)
         note(
-            "Marketplace gross merchandise value grew steadily from launch in late 2016, "
-            f"settling near R$ 1M/month by mid-2018. The dataset cuts off in early September 2018, "
-            "so the final point can look artificially low."
+            "Revenue grew steadily from late 2016 and was running around R$ 1M/month by mid-2018. "
+            "The dataset ends on Sep 3, 2018, so the last point is just a partial month."
         )
 
 with right:
@@ -286,9 +284,8 @@ with right:
         delivered_share = float(statuses.loc[statuses["order_status"] == "delivered", "share"].sum() if (statuses["order_status"] == "delivered").any() else 0)
         canceled_share = float(statuses.loc[statuses["order_status"] == "canceled", "share"].sum() if (statuses["order_status"] == "canceled").any() else 0)
         note(
-            f"<strong>{delivered_share * 100:.1f}%</strong> of orders reach delivered status — typical for "
-            f"a mature marketplace. Cancellations are <strong>{canceled_share * 100:.1f}%</strong>, "
-            "the rest are in transit or pending review."
+            f"<strong>{delivered_share * 100:.1f}%</strong> of orders end up delivered. "
+            f"Cancellations are <strong>{canceled_share * 100:.1f}%</strong>; the rest are in transit or pending."
         )
 
 st.subheader("Top 10 Product Categories by Revenue")
@@ -324,9 +321,8 @@ else:
     )
     st.altair_chart(cat_chart + labels, use_container_width=True)
     note(
-        "Categories are translated from Portuguese (e.g. <code>cama_mesa_banho</code> = beds/baths, "
-        "<code>beleza_saude</code> = beauty/health). Olist's catalog is a long tail — "
-        "no single category dominates."
+        "Categories are in Portuguese (e.g. <code>cama_mesa_banho</code> = beds/baths, "
+        "<code>beleza_saude</code> = beauty/health). The catalog is broad: no single category dominates."
     )
 
     leader = top_cats.iloc[0]
