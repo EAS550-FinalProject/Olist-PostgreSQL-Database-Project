@@ -5,6 +5,10 @@ enableXsrfProtection = true
 [browser]
 gatherUsageStats = false
 
+[client]
+toolbarMode = "minimal"
+showSidebarNavigation = true
+
 [theme]
 base = "light"
 primaryColor = "#DC2626"

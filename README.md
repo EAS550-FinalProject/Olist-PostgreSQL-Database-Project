@@ -418,7 +418,7 @@ flowchart LR
 
 ## Application Features
 
-### Overview (`app/streamlit_app.py`)
+### Overview (`app/Overview.py`)
 
 * Five KPI cards: orders, customers, gross revenue, avg review, on-time delivery rate
 * Date range slider that filters every chart and KPI on the page
@@ -458,7 +458,7 @@ flowchart LR
 
 ```text
 app/
-├── streamlit_app.py          # Overview page (entry script for Streamlit)
+├── Overview.py               # Entry script — appears as "Overview" in the sidebar
 ├── db.py                     # Cached SQLAlchemy engine + run_query helper
 ├── test_app.py               # AppTest smoke test for all four pages
 ├── pages/
@@ -513,7 +513,7 @@ DATABASE_URL=postgresql://...
 ### 3. Launch Streamlit
 
 ```bash
-streamlit run app/streamlit_app.py
+streamlit run app/Overview.py
 ```
 
 The app opens at `http://localhost:8501`. Use the sidebar to navigate between Overview, RFM Analysis, Seller Performance, and Cohort Retention.
@@ -535,7 +535,7 @@ The repo includes a `render.yaml` Blueprint, so Render can provision the service
 1. Push `main` to GitHub (Render watches the branch configured in `render.yaml`).
 2. In Render, **New → Blueprint** and point it at this repository. Render reads `render.yaml` and creates the `olist-analytics` web service.
 3. In the service's **Environment** tab, set `DATABASE_URL` to the Neon pooler connection string. (`render.yaml` declares the variable with `sync: false`, so Render prompts for it instead of reading it from source.)
-4. First build runs `pip install -r requirements.txt`; first start runs `streamlit run app/streamlit_app.py --server.port=$PORT --server.address=0.0.0.0 --server.headless=true`.
+4. First build runs `pip install -r requirements.txt`; first start runs `streamlit run app/Overview.py --server.port=$PORT --server.address=0.0.0.0 --server.headless=true`.
 
 ### After setup
 

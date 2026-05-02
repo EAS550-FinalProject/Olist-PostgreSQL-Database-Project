@@ -1,7 +1,7 @@
 """Capture full-page screenshots of every Streamlit page.
 
 Assumes the app is already running locally at http://localhost:8765
-(start it with `streamlit run app/streamlit_app.py --server.port=8765`).
+(start it with `streamlit run app/Overview.py --server.port=8765`).
 
 Output goes to app/screenshots/{overview,rfm,seller_performance,cohort_retention}.png.
 """

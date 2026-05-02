@@ -203,10 +203,18 @@ runner = sellers.iloc[1] if len(sellers) > 1 else None
 multiple = (leader["total_revenue"] / runner["total_revenue"]) if runner is not None else None
 
 if runner is not None:
+    # Use 2 decimals so a 1.04× lead doesn't get rounded to a misleading "1.0×"
+    if multiple >= 1.5:
+        gap = f"{multiple:.1f}× ahead of the runner-up"
+    elif multiple >= 1.05:
+        gap = f"{multiple:.2f}× ahead of the runner-up"
+    else:
+        diff_pct = (multiple - 1) * 100
+        gap = f"just {diff_pct:.1f}% ahead of the runner-up"
     insight(
         f"<strong>{leader['short_id']}</strong> in <strong>{leader['seller_city'].title() if leader['seller_city'] else '—'}, "
         f"{leader['seller_state']}</strong> tops the board with R$ {leader['total_revenue']:,.0f} — "
-        f"{multiple:.1f}× the runner-up. The top 10 sellers contribute "
+        f"{gap}. The top 10 sellers contribute "
         f"<strong>{top10_share:.1f}%</strong> of the leaderboard's revenue, hinting at a long-tail marketplace."
     )
 

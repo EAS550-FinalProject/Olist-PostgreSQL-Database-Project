@@ -158,17 +158,6 @@ with st.sidebar:
     )
     st.caption(f"**{start_date:%b %d, %Y}** → **{end_date:%b %d, %Y}**")
 
-    st.divider()
-    st.markdown("### Navigation")
-    st.markdown(
-        """
-        - **Overview** — KPIs and trends
-        - **RFM Analysis** — customer segmentation
-        - **Seller Performance** — marketplace leaderboard
-        - **Cohort Retention** — customer return behavior
-        """
-    )
-
 hero(
     "Olist E-Commerce Analytics",
     "Live BI dashboard over the Brazilian E-Commerce dataset by Olist. "

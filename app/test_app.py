@@ -19,7 +19,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 PAGES = [
-    ROOT / "app" / "streamlit_app.py",
+    ROOT / "app" / "Overview.py",
     ROOT / "app" / "pages" / "1_RFM_Analysis.py",
     ROOT / "app" / "pages" / "2_Seller_Performance.py",
     ROOT / "app" / "pages" / "3_Cohort_Retention.py",
