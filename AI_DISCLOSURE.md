@@ -39,6 +39,24 @@ Sample Phase 3 prompts:
 
 All dashboard design choices (which KPIs, which segmentation thresholds, which charts to expose) and SQL query design were made by the team. AI did not generate the analytical SQL — those queries are reused from Phase 2 with team-authored modifications for parameterization.
 
+## Phase 3 Polish (visual + UX pass)
+
+Later in Phase 3 we used AI to help with the visual polish round:
+
+- CSS for the sidebar brand block, hero cards, and insight callouts
+- Picking the color palette (settled on a charcoal + ember red "Volcano" theme)
+- Fixing the cohort heatmap (Altair color scale was washing everything out — got help on `clamp=True` and using the actual data range for `domain`)
+- Wiring `st.page_link` to build a custom sidebar nav under the brand block
+
+Sample prompts:
+
+- "How do I put my own content above the auto-generated page nav in the Streamlit sidebar?"
+- "Why is my Altair heatmap all white when values are between 0 and 1%?"
+- "How do I add CSV download buttons next to a Streamlit dataframe?"
+- "Which Streamlit config option hides the Deploy button in the top right?"
+
+The actual UX decisions (which colors to pick, what insight text to show below each chart, which numbers became KPIs) were ours.
+
 ## Notes
 - No AI tool was used to architect the entire pipeline or to write technical justification reports.
 - All code was reviewed, tested, and understood by the team before committing.
