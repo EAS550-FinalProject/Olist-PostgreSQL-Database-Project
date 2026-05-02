@@ -16,12 +16,25 @@ import pandas as pd
 import streamlit as st
 
 from db import run_query, to_csv_bytes
-from style import ACCENT, PRIMARY, PRIMARY_LIGHT, SUCCESS, apply_style, caption, hero, insight
+from style import (
+    ACCENT,
+    PRIMARY,
+    PRIMARY_LIGHT,
+    SUCCESS,
+    apply_style,
+    brand_sidebar,
+    caption,
+    footer,
+    hero,
+    insight,
+    note,
+)
 
 st.set_page_config(
     page_title="Seller Performance · Olist", page_icon=":shopping_bags:", layout="wide"
 )
 apply_style()
+brand_sidebar("Seller Performance")
 
 
 @st.cache_data(ttl=600, show_spinner=False)
@@ -156,8 +169,15 @@ if sellers.empty:
     st.warning("No sellers match the current filters.")
     st.stop()
 
-sellers["seller_label"] = sellers["seller_id"].str[:8] + " · " + sellers["seller_city"].fillna("?").str.title() + ", " + sellers["seller_state"].fillna("--")
 sellers["short_id"] = sellers["seller_id"].str[:8]
+sellers["seller_label"] = (
+    "#"
+    + sellers["revenue_rank"].astype(int).astype(str)
+    + " · "
+    + sellers["seller_city"].fillna("?").str.title()
+    + ", "
+    + sellers["seller_state"].fillna("--")
+)
 
 combined_rev = float(sellers["total_revenue"].sum())
 top10_rev = float(sellers.head(10)["total_revenue"].sum())
@@ -221,6 +241,11 @@ top_chart = (
     .properties(height=520)
 )
 st.altair_chart(top_chart, use_container_width=True)
+note(
+    "Color encodes the seller's average review score (1–5). Watch for high-revenue bars "
+    "in lighter shades — those sellers are moving volume despite mediocre reviews and "
+    "are quality-risk outliers worth investigating."
+)
 
 st.subheader("Revenue by Seller State")
 caption("São Paulo dominates Brazilian e-commerce; this chart shows the gap.")
@@ -247,6 +272,12 @@ state_chart = (
     .properties(height=560)
 )
 st.altair_chart(state_chart, use_container_width=True)
+sp_share = float(state_rev.loc[state_rev["seller_state"] == "SP", "pct"].sum() if (state_rev["seller_state"] == "SP").any() else 0)
+note(
+    f"São Paulo (SP) hosts <strong>{sp_share:.0f}%</strong> of marketplace revenue alone — "
+    "Olist is São Paulo–centric, with Rio de Janeiro (RJ), Minas Gerais (MG), and Paraná (PR) "
+    "forming a clear second tier. Many states have fewer than 100 active sellers."
+)
 
 st.subheader("Full Leaderboard")
 caption("Sortable, filterable view. Reviewing the **review percentile** column surfaces sellers with quality issues despite high revenue.")
@@ -260,6 +291,7 @@ leader_view["Orders"] = leader_view["total_orders"].astype(int).map("{:,}".forma
 leader_view["Items"] = leader_view["total_items_sold"].astype(int).map("{:,}".format)
 leader_view["Revenue (BRL)"] = leader_view["total_revenue"].apply(lambda v: f"R$ {v:,.0f}")
 leader_view["Avg Item Price"] = leader_view["avg_item_price"].apply(lambda v: f"R$ {v:,.2f}")
+leader_view["_review_raw"] = leader_view["avg_review_score"]
 leader_view["Avg Review"] = leader_view["avg_review_score"].apply(
     lambda v: f"{v:.2f}" if pd.notna(v) else "—"
 )
@@ -272,7 +304,33 @@ leader_cols = [
     "Rank", "Seller", "City", "State", "Orders", "Items",
     "Revenue (BRL)", "Avg Item Price", "Avg Review", "Review %ile", "State rank",
 ]
-st.dataframe(leader_view[leader_cols], hide_index=True, use_container_width=True)
+
+
+def _color_review_row(row):
+    raw = row["_review_raw"]
+    color = ""
+    if pd.notna(raw):
+        if raw >= 4.5:
+            color = "color: #047857; font-weight: 600;"
+        elif raw >= 4.0:
+            color = "color: #059669; font-weight: 500;"
+        elif raw >= 3.5:
+            color = "color: #B45309;"
+        elif raw >= 3.0:
+            color = "color: #B91C1C;"
+        else:
+            color = "color: #7F1D1D; font-weight: 600;"
+    return [color if col == "Avg Review" else "" for col in row.index]
+
+
+styled_leader = leader_view[leader_cols + ["_review_raw"]].style.apply(_color_review_row, axis=1)
+st.dataframe(
+    styled_leader,
+    hide_index=True,
+    use_container_width=True,
+    column_order=leader_cols,
+    column_config={"_review_raw": None},
+)
 
 st.download_button(
     "Download leaderboard (CSV)",
@@ -280,3 +338,10 @@ st.download_button(
     file_name=f"seller_leaderboard_top{len(sellers)}.csv",
     mime="text/csv",
 )
+note(
+    "<strong>Avg Review</strong> is color-coded: green for 4.0+, amber for 3.5–4.0, red below. "
+    "<strong>Review %ile</strong> is the seller's percentile rank by review score across all sellers — "
+    "100 = best reviews, 0 = worst. Sort by State rank to see who tops each region."
+)
+
+footer()

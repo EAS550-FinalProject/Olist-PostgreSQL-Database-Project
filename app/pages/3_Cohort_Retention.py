@@ -17,12 +17,13 @@ import pandas as pd
 import streamlit as st
 
 from db import run_query, to_csv_bytes
-from style import PRIMARY, apply_style, caption, hero, insight
+from style import PRIMARY, apply_style, brand_sidebar, caption, footer, hero, insight, note
 
 st.set_page_config(
     page_title="Cohort Retention · Olist", page_icon=":calendar:", layout="wide"
 )
 apply_style()
+brand_sidebar("Cohort Retention")
 
 with st.sidebar:
     st.markdown("### Horizon")
@@ -150,11 +151,17 @@ if best_m1_cohort is not None and best_m1 > 0:
 st.divider()
 
 st.subheader("Retention Heatmap (% of cohort active)")
-caption("Hover any cell to see exact counts and the cohort's original size.")
+caption(
+    "Month 0 (always 100%) is omitted so the meaningful pattern is visible. "
+    "Hover any cell for exact counts and original cohort size."
+)
+
+heatmap_df = df[df["months_since_first_purchase"] > 0].copy()
+color_max = max(heatmap_df["retention_rate"].max(), 5) if not heatmap_df.empty else 5
 
 heatmap = (
-    alt.Chart(df)
-    .mark_rect(stroke="white", strokeWidth=1)
+    alt.Chart(heatmap_df)
+    .mark_rect(stroke="white", strokeWidth=1.2)
     .encode(
         x=alt.X(
             "months_since_first_purchase:O",
@@ -165,7 +172,7 @@ heatmap = (
         color=alt.Color(
             "retention_rate:Q",
             title="Retention %",
-            scale=alt.Scale(scheme="blues", domain=[0, max(df["retention_rate"].max(), 5)]),
+            scale=alt.Scale(scheme="blues", domain=[0, color_max]),
             legend=alt.Legend(orient="right", gradientLength=400),
         ),
         tooltip=[
@@ -179,20 +186,28 @@ heatmap = (
     .properties(height=620)
 )
 
-label_df = df[df["retention_rate"] >= 1].copy()
+# Only label cells with meaningful values to keep the grid clean
+label_df = heatmap_df[heatmap_df["retention_rate"] >= 1].copy()
 text = (
     alt.Chart(label_df)
     .mark_text(baseline="middle", fontSize=10, fontWeight=500)
     .encode(
         x=alt.X("months_since_first_purchase:O"),
         y=alt.Y("cohort_label:O", sort="ascending"),
-        text=alt.Text("retention_rate:Q", format=".0f"),
+        text=alt.Text("retention_rate:Q", format=".1f"),
         color=alt.condition(
-            "datum.retention_rate > 50", alt.value("white"), alt.value("#0F172A")
+            f"datum.retention_rate > {color_max * 0.5}",
+            alt.value("white"),
+            alt.value("#0F172A"),
         ),
     )
 )
 st.altair_chart(heatmap + text, use_container_width=True)
+note(
+    "Retention drops sharply by month 1 (typically to 1–7%) and stays low — expected for "
+    "transactional commerce where most customers buy a single item. The empty bottom-right "
+    "triangle reflects newer cohorts that haven't had time to age a full horizon."
+)
 
 col1, col2 = st.columns(2)
 
@@ -214,6 +229,11 @@ with col1:
         .properties(height=300)
     )
     st.altair_chart(size_chart, use_container_width=True)
+    note(
+        "New-customer acquisition ramped through 2017 and peaked in late 2017 — likely the "
+        "Black Friday / holiday surge. The 2018 falloff is partially the dataset's September "
+        "cutoff, not a real decline."
+    )
 
 with col2:
     st.subheader("Average Retention Curve")
@@ -233,6 +253,11 @@ with col2:
         .properties(height=300)
     )
     st.altair_chart(curve, use_container_width=True)
+    note(
+        "The curve is the average across all cohorts at each month. The sharp drop in month 1 "
+        "tells the same story as the heatmap. The flat tail past month 3 is the small loyal "
+        "sub-population that does come back."
+    )
 
 raw_cols = [
     "cohort_label",
@@ -252,3 +277,5 @@ st.download_button(
     file_name=f"cohort_retention_{max_horizon}mo.csv",
     mime="text/csv",
 )
+
+footer()

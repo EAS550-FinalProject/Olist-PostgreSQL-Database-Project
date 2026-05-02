@@ -16,12 +16,13 @@ import pandas as pd
 import streamlit as st
 
 from db import run_query, to_csv_bytes
-from style import SEGMENT_COLORS, apply_style, caption, hero, insight
+from style import SEGMENT_COLORS, apply_style, brand_sidebar, caption, footer, hero, insight, note
 
 st.set_page_config(
     page_title="RFM Analysis · Olist", page_icon=":busts_in_silhouette:", layout="wide"
 )
 apply_style()
+brand_sidebar("RFM Segmentation")
 
 
 @st.cache_data(ttl=600, show_spinner="Computing RFM segments…")
@@ -207,6 +208,11 @@ with left:
         )
     )
     st.altair_chart(bar + labels, use_container_width=True)
+    note(
+        "<strong>Others</strong> is usually the largest bucket — those customers don't fit any "
+        "prescriptive rule (mid-range across all three axes). Champions, Loyal, and Potential "
+        "Loyalists are the actively-engaged tiers; At Risk and Lost are the win-back targets."
+    )
 
 with right:
     st.subheader("Revenue Share")
@@ -232,6 +238,12 @@ with right:
         .properties(height=340)
     )
     st.altair_chart(pie, use_container_width=True)
+    if total_revenue and champ_count:
+        note(
+            f"Champions punch well above their weight: <strong>{(champ_count / total_customers * 100):.1f}%</strong> "
+            f"of customers, <strong>{(champ_revenue / total_revenue * 100):.1f}%</strong> of revenue. "
+            "Losing one Champion is worth roughly losing several 'Others'."
+        )
 
 st.subheader("Segment Detail")
 caption("Per-segment averages and totals. Use this to decide which segments deserve which campaigns.")
@@ -278,3 +290,5 @@ with st.expander("How is this calculated?"):
         Champions require **all three** scores to be at or above the high threshold; Lost requires recency and frequency at 1.
         """
     )
+
+footer()

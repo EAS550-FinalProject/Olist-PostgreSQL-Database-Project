@@ -7,6 +7,8 @@ through every page.
 
 from __future__ import annotations
 
+from datetime import datetime
+
 import altair as alt
 import streamlit as st
 
@@ -156,6 +158,25 @@ _CSS = """
         line-height: 1.5;
     }
 
+    .data-note {
+        font-size: 0.88rem;
+        color: #334155;
+        padding: 0.6rem 0.85rem 0.6rem 1rem;
+        border-left: 3px solid #CBD5E1;
+        background: #F8FAFC;
+        border-radius: 4px;
+        margin: 0.6rem 0 1.5rem 0;
+        line-height: 1.6;
+    }
+    .data-note .label {
+        color: var(--primary);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.72rem;
+        letter-spacing: 0.06em;
+        margin-right: 0.4rem;
+    }
+
     section[data-testid="stSidebar"] {
         background: linear-gradient(180deg, #F8FAFC 0%, #EFF6FF 100%);
         border-right: 1px solid var(--border);
@@ -164,6 +185,57 @@ _CSS = """
     section[data-testid="stSidebar"] h2,
     section[data-testid="stSidebar"] h3 {
         color: var(--primary);
+    }
+
+    .sidebar-brand {
+        background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+        border-radius: 10px;
+        padding: 1rem 1rem 0.9rem 1rem;
+        margin: 0 0 1rem 0;
+        color: white;
+        box-shadow: 0 4px 14px rgba(30, 64, 175, 0.18);
+    }
+    .sidebar-brand .accent {
+        width: 28px; height: 4px; border-radius: 2px;
+        background: var(--accent);
+        margin-bottom: 0.6rem;
+    }
+    .sidebar-brand .name {
+        font-size: 1rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        margin: 0;
+        line-height: 1.2;
+    }
+    .sidebar-brand .tagline {
+        font-size: 0.74rem;
+        opacity: 0.92;
+        margin: 0.25rem 0 0 0;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+    }
+
+    .page-footer {
+        border-top: 1px solid var(--border);
+        margin-top: 2.5rem;
+        padding: 1rem 0 0.4rem 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: var(--muted);
+        font-size: 0.82rem;
+        flex-wrap: wrap;
+        gap: 0.6rem;
+    }
+    .page-footer .meta {
+        font-variant-numeric: tabular-nums;
+    }
+    .page-footer .dot {
+        display: inline-block;
+        width: 7px; height: 7px; border-radius: 50%;
+        background: #10B981;
+        margin-right: 0.4rem;
+        vertical-align: middle;
     }
 
     [data-testid="stDataFrame"] {
@@ -243,3 +315,42 @@ def insight(text: str, *, kind: str = "info") -> None:
 
 def caption(text: str) -> None:
     st.markdown(f'<p class="section-caption">{text}</p>', unsafe_allow_html=True)
+
+
+def note(text: str, label: str = "What this means") -> None:
+    """Interpretation note shown directly below a chart."""
+    st.markdown(
+        f'<div class="data-note"><span class="label">{label}</span>{text}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def brand_sidebar(tagline: str = "Phase 3 · Live BI Dashboard") -> None:
+    """Render the OLIST ANALYTICS brand block + a refresh button at the top of the sidebar."""
+    st.sidebar.markdown(
+        f"""
+        <div class="sidebar-brand">
+            <div class="accent"></div>
+            <p class="name">OLIST ANALYTICS</p>
+            <p class="tagline">{tagline}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    if st.sidebar.button("Refresh data", use_container_width=True, help="Clear all cached queries and re-fetch from Neon"):
+        st.cache_data.clear()
+        st.rerun()
+
+
+def footer() -> None:
+    """Page-level footer with attribution and live render timestamp."""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M")
+    st.markdown(
+        f"""
+        <div class="page-footer">
+            <span><span class="dot"></span>Olist Analytics · powered by Neon Postgres + dbt + Streamlit</span>
+            <span class="meta">Page rendered {now} · cache TTL 10 min</span>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )

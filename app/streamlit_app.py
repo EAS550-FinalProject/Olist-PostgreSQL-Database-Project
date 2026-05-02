@@ -18,7 +18,19 @@ import pandas as pd
 import streamlit as st
 
 from db import run_query, to_csv_bytes
-from style import ACCENT, PRIMARY, PRIMARY_LIGHT, SUCCESS, apply_style, caption, hero, insight
+from style import (
+    ACCENT,
+    PRIMARY,
+    PRIMARY_LIGHT,
+    SUCCESS,
+    apply_style,
+    brand_sidebar,
+    caption,
+    footer,
+    hero,
+    insight,
+    note,
+)
 
 st.set_page_config(
     page_title="Olist Analytics",
@@ -28,6 +40,7 @@ st.set_page_config(
 )
 
 apply_style()
+brand_sidebar("Phase 3 · Live BI Dashboard")
 
 
 @st.cache_data(ttl=600, show_spinner=False)
@@ -243,6 +256,11 @@ with left:
         )
         points = base.mark_circle(size=55, color=PRIMARY).encode(y="revenue:Q")
         st.altair_chart((area + points).properties(height=340), use_container_width=True)
+        note(
+            "Marketplace gross merchandise value grew steadily from launch in late 2016, "
+            f"settling near R$ 1M/month by mid-2018. The dataset cuts off in early September 2018, "
+            "so the final point can look artificially low."
+        )
 
 with right:
     st.subheader("Order Status Mix")
@@ -276,6 +294,13 @@ with right:
             .properties(height=340)
         )
         st.altair_chart(bar, use_container_width=True)
+        delivered_share = float(statuses.loc[statuses["order_status"] == "delivered", "share"].sum() if (statuses["order_status"] == "delivered").any() else 0)
+        canceled_share = float(statuses.loc[statuses["order_status"] == "canceled", "share"].sum() if (statuses["order_status"] == "canceled").any() else 0)
+        note(
+            f"<strong>{delivered_share * 100:.1f}%</strong> of orders reach delivered status — typical for "
+            f"a mature marketplace. Cancellations are <strong>{canceled_share * 100:.1f}%</strong>, "
+            "the rest are in transit or pending review."
+        )
 
 st.subheader("Top 10 Product Categories by Revenue")
 caption("The catalog is long-tail — these ten categories drive most of the marketplace's gross merchandise value.")
@@ -309,6 +334,11 @@ else:
         )
     )
     st.altair_chart(cat_chart + labels, use_container_width=True)
+    note(
+        "Categories are translated from Portuguese (e.g. <code>cama_mesa_banho</code> = beds/baths, "
+        "<code>beleza_saude</code> = beauty/health). Olist's catalog is a long tail — "
+        "no single category dominates."
+    )
 
     leader = top_cats.iloc[0]
     insight(
@@ -366,6 +396,13 @@ if not payments.empty:
             file_name=f"payment_mix_{start_date:%Y%m%d}_{end_date:%Y%m%d}.csv",
             mime="text/csv",
         )
+    cc_share = float(payments.loc[payments["payment_type"] == "credit_card", "orders"].sum() / payments["orders"].sum() * 100) if "credit_card" in payments["payment_type"].values else 0
+    boleto_share = float(payments.loc[payments["payment_type"] == "boleto", "orders"].sum() / payments["orders"].sum() * 100) if "boleto" in payments["payment_type"].values else 0
+    note(
+        f"Credit cards drive <strong>{cc_share:.1f}%</strong> of orders; boleto bancário "
+        f"(Brazil's bank-slip payment) is <strong>{boleto_share:.1f}%</strong>. "
+        "Vouchers and debit cards are negligible."
+    )
 
 st.divider()
 caption(
@@ -373,3 +410,4 @@ caption(
     f"Window: {start_date:%b %Y} – {end_date:%b %Y}. "
     f"All charts cached for 10 minutes; widget interactions don't re-hit the database."
 )
+footer()
