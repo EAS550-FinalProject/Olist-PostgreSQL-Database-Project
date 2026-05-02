@@ -16,9 +16,9 @@ This phase covers everything from raw relational modeling to writing constraints
 
 **What's inside:**
 
-1. **`ERD.md`** and **`Olist Database ERD.pdf`**: Our Crow's Foot diagram showing how everything maps together logically.
+1. **`docs/ERD.md`** and **`docs/ERD.pdf`**: Our Crow's Foot diagram showing how everything maps together logically.
 2. **`schema.sql`**: The DDL script we wrote to provision the actual tables in Postgres.
-3. **`3nf_report.pdf`**: Our write-up explaining why we made certain normalization choices and how they prevent common database anomalies.
+3. **`docs/3nf_report.pdf`**: Our write-up explaining why we made certain normalization choices and how they prevent common database anomalies.
 4. **`ingest_data.py`**: A Pandas/SQLAlchemy ETL script. We made sure it's fully idempotent, meaning you can run it as many times as you want without messing up the database.
 5. **`security.sql`** *(Bonus)*: A quick Role-Based Access Control setup we added to separate read-only analysts from an app user that can actually insert data.
 
@@ -153,7 +153,7 @@ This repository includes the following Phase 2 deliverables:
 1. **`olist_dbt/`**
    Complete dbt project for transforming the OLTP schema into an analytics-ready star schema.
 
-2. **`star_schema_diagram.md`**
+2. **`docs/star_schema_diagram.pdf`**
    Documentation of the star schema design, including the fact table, dimension tables, grain, and design rationale.
 
 3. **`queries/`**
@@ -163,7 +163,7 @@ This repository includes the following Phase 2 deliverables:
    * `seller_performance.sql`
    * `cohort_retention.sql`
 
-4. **`performance_tuning_report.md`**
+4. **`docs/performance_tuning_report.pdf`**
    Performance analysis of the most complex analytical query using `EXPLAIN ANALYZE`, indexing strategy, and tuning observations.
 
 5. **`.github/workflows/ci.yml`**
@@ -196,8 +196,13 @@ This repository includes the following Phase 2 deliverables:
 │   ├── cohort_retention.sql
 │   ├── rfm_analysis.sql
 │   └── seller_performance.sql
-├── performance_tuning_report.pdf
-├── star_schema_diagram.pdf
+├── docs/
+│   ├── ERD.md
+│   ├── ERD.pdf
+│   ├── 3nf_report.pdf
+│   ├── star_schema_diagram.pdf
+│   ├── performance_tuning_report.pdf
+│   └── screenshots/
 ├── README.md
 ├── schema.sql
 ├── ingest_data.py
@@ -289,7 +294,7 @@ Our performance tuning work included:
 
 See:
 
-* `performance_tuning_report.md`
+* `docs/performance_tuning_report.pdf`
 
 ## CI/CD Workflow
 
@@ -426,7 +431,7 @@ flowchart LR
 * Top 10 product categories bar chart
 * Order status breakdown table
 
-![Overview page](app/screenshots/overview.png)
+![Overview page](docs/screenshots/overview.png)
 
 ### RFM Analysis (`app/pages/1_RFM_Analysis.py`)
 
@@ -434,7 +439,7 @@ flowchart LR
 * Two threshold sliders to tighten or loosen segment definitions live
 * Customers-per-segment bar chart, revenue-share donut, segment detail table
 
-![RFM segmentation](app/screenshots/rfm.png)
+![RFM segmentation](docs/screenshots/rfm.png)
 
 ### Seller Performance (`app/pages/2_Seller_Performance.py`)
 
@@ -442,7 +447,7 @@ flowchart LR
 * KPI cards: sellers shown, combined revenue, avg review score
 * Top 20 sellers bar chart, revenue-by-state chart, full ranked leaderboard
 
-![Seller performance](app/screenshots/seller_performance.png)
+![Seller performance](docs/screenshots/seller_performance.png)
 
 ### Cohort Retention (`app/pages/3_Cohort_Retention.py`)
 
@@ -450,9 +455,9 @@ flowchart LR
 * Retention heatmap (cohort month × months since first purchase) with labelled cells
 * Cohort size bar chart and raw cohort table
 
-![Cohort retention](app/screenshots/cohort_retention.png)
+![Cohort retention](docs/screenshots/cohort_retention.png)
 
-> Screenshots live in [`app/screenshots/`](app/screenshots/). Capture instructions are in that folder's README.
+> Screenshots live in [`docs/screenshots/`](docs/screenshots/). Run `python scripts/capture_screenshots.py` (with the app on `:8765`) to regenerate them.
 
 ## Code Layout
 
