@@ -118,11 +118,17 @@ df["cohort_label"] = pd.to_datetime(df["cohort_month"]).dt.strftime("%Y-%m")
 
 cohorts_count = df["cohort_month"].nunique()
 total_customers = int(df.drop_duplicates("cohort_month")["cohort_size"].sum())
-month_1 = df.loc[df["months_since_first_purchase"] == 1, "retention_rate"]
+
+# Stats are computed from cohorts large enough to be meaningful (>= 50 customers)
+# so single-customer outliers don't drive the headline numbers.
+MIN_COHORT_FOR_STATS = 50
+meaningful = df[df["cohort_size"] >= MIN_COHORT_FOR_STATS]
+month_1 = meaningful.loc[meaningful["months_since_first_purchase"] == 1, "retention_rate"]
 avg_m1 = month_1.mean() if not month_1.empty else 0.0
 best_m1 = month_1.max() if not month_1.empty else 0.0
 best_m1_cohort = (
-    df.loc[df["months_since_first_purchase"] == 1].sort_values("retention_rate", ascending=False)
+    meaningful.loc[meaningful["months_since_first_purchase"] == 1]
+    .sort_values("retention_rate", ascending=False)
     .iloc[0]
     if not month_1.empty
     else None
@@ -142,22 +148,33 @@ c4.metric(
 
 if best_m1_cohort is not None and best_m1 > 0:
     insight(
-        f"<strong>Month-1 repeat rate averages {avg_m1:.2f}%</strong> across all cohorts — "
-        "low, as expected for transactional commerce where most customers buy a single item. "
-        f"The strongest comeback came from <strong>{pd.to_datetime(best_m1_cohort['cohort_month']):%b %Y}</strong> "
-        f"with {best_m1:.2f}% returning the next month."
+        f"<strong>Month-1 repeat rate averages {avg_m1:.2f}%</strong> across cohorts of "
+        f"50+ customers — low, as expected for transactional commerce where most customers "
+        "buy a single item. The strongest comeback came from "
+        f"<strong>{pd.to_datetime(best_m1_cohort['cohort_month']):%b %Y}</strong> with "
+        f"{best_m1:.2f}% returning the next month."
     )
 
 st.divider()
 
 st.subheader("Retention Heatmap (% of cohort active)")
 caption(
-    "Month 0 (always 100%) is omitted so the meaningful pattern is visible. "
-    "Hover any cell for exact counts and original cohort size."
+    "Month 0 (always 100%) is omitted, and cohorts with fewer than 50 customers are filtered "
+    "out so single-customer outliers don't distort the colors. Hover any cell for exact counts."
 )
 
-heatmap_df = df[df["months_since_first_purchase"] > 0].copy()
-color_max = max(heatmap_df["retention_rate"].max(), 5) if not heatmap_df.empty else 5
+MIN_COHORT_SIZE = 50
+heatmap_df = df[
+    (df["months_since_first_purchase"] > 0) & (df["cohort_size"] >= MIN_COHORT_SIZE)
+].copy()
+
+# Olist is highly transactional — meaningful repeat rates are tiny (0.0–1.0%).
+# Color scale auto-fits to the actual data so contrast is visible instead of
+# washed out by an arbitrary upper bound.
+if not heatmap_df.empty:
+    color_max = max(float(heatmap_df["retention_rate"].max()) * 1.1, 0.5)
+else:
+    color_max = 1.0
 
 heatmap = (
     alt.Chart(heatmap_df)
@@ -172,7 +189,7 @@ heatmap = (
         color=alt.Color(
             "retention_rate:Q",
             title="Retention %",
-            scale=alt.Scale(scheme="blues", domain=[0, color_max]),
+            scale=alt.Scale(scheme="reds", domain=[0, color_max], clamp=True),
             legend=alt.Legend(orient="right", gradientLength=400),
         ),
         tooltip=[
@@ -186,17 +203,17 @@ heatmap = (
     .properties(height=620)
 )
 
-# Only label cells with meaningful values to keep the grid clean
-label_df = heatmap_df[heatmap_df["retention_rate"] >= 1].copy()
+# Show every value (Olist values are small and we want to see them all)
+label_df = heatmap_df[heatmap_df["retention_rate"] > 0].copy()
 text = (
     alt.Chart(label_df)
     .mark_text(baseline="middle", fontSize=10, fontWeight=500)
     .encode(
         x=alt.X("months_since_first_purchase:O"),
         y=alt.Y("cohort_label:O", sort="ascending"),
-        text=alt.Text("retention_rate:Q", format=".1f"),
+        text=alt.Text("retention_rate:Q", format=".2f"),
         color=alt.condition(
-            f"datum.retention_rate > {color_max * 0.5}",
+            f"datum.retention_rate > {color_max * 0.6}",
             alt.value("white"),
             alt.value("#0F172A"),
         ),
@@ -204,7 +221,7 @@ text = (
 )
 st.altair_chart(heatmap + text, use_container_width=True)
 note(
-    "Retention drops sharply by month 1 (typically to 1–7%) and stays low — expected for "
+    "Retention drops sharply by month 1 (typically below 1%) and stays low — expected for "
     "transactional commerce where most customers buy a single item. The empty bottom-right "
     "triangle reflects newer cohorts that haven't had time to age a full horizon."
 )
@@ -237,8 +254,11 @@ with col1:
 
 with col2:
     st.subheader("Average Retention Curve")
-    caption("Retention averaged across cohorts at each month-since-first-purchase.")
-    avg_curve = df.groupby("months_since_first_purchase", as_index=False)["retention_rate"].mean()
+    caption("Retention averaged across cohorts of 50+ customers at each month-since-first-purchase.")
+    avg_curve = (
+        meaningful.groupby("months_since_first_purchase", as_index=False)["retention_rate"]
+        .mean()
+    )
     curve = (
         alt.Chart(avg_curve)
         .mark_line(point=alt.OverlayMarkDef(size=80, filled=True, color=PRIMARY), color=PRIMARY, strokeWidth=2.5)

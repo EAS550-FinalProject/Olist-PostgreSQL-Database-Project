@@ -224,7 +224,7 @@ top_chart = (
         color=alt.Color(
             "avg_review_score:Q",
             title="Avg Review",
-            scale=alt.Scale(scheme="blues", domain=[3.0, 5.0]),
+            scale=alt.Scale(scheme="oranges", domain=[3.0, 5.0]),
             legend=alt.Legend(orient="top-right"),
         ),
         tooltip=[
@@ -258,7 +258,7 @@ state_chart = (
         y=alt.Y("seller_state:N", sort="-x", title=None),
         color=alt.Color(
             "total_revenue:Q",
-            scale=alt.Scale(scheme="blues"),
+            scale=alt.Scale(scheme="reds"),
             legend=None,
         ),
         tooltip=[

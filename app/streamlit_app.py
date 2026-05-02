@@ -282,7 +282,7 @@ with right:
                     legend=None,
                     scale=alt.Scale(
                         domain=["delivered", "shipped", "canceled", "invoiced", "processing", "unavailable", "approved", "created"],
-                        range=[SUCCESS, PRIMARY_LIGHT, "#EF4444", "#A855F7", ACCENT, "#94A3B8", "#06B6D4", "#64748B"],
+                        range=[SUCCESS, "#0891B2", "#7F1D1D", "#7C3AED", ACCENT, "#94A3B8", "#0EA5E9", "#64748B"],
                     ),
                 ),
                 tooltip=[
@@ -367,7 +367,7 @@ if not payments.empty:
                 title="Payment Type",
                 scale=alt.Scale(
                     domain=["credit_card", "boleto", "voucher", "debit_card", "not_defined"],
-                    range=[PRIMARY, ACCENT, "#06B6D4", "#10B981", "#94A3B8"],
+                    range=[PRIMARY, ACCENT, "#0891B2", SUCCESS, "#94A3B8"],
                 ),
             ),
             tooltip=[

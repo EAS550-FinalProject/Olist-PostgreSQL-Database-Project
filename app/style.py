@@ -13,46 +13,51 @@ import altair as alt
 import streamlit as st
 
 
-PRIMARY = "#1E40AF"
-PRIMARY_LIGHT = "#3B82F6"
-ACCENT = "#F59E0B"
-SUCCESS = "#10B981"
-DANGER = "#EF4444"
-INFO = "#06B6D4"
-NEUTRAL = "#64748B"
+PRIMARY = "#DC2626"        # ember red
+PRIMARY_LIGHT = "#F87171"  # softer red for gradients
+ACCENT = "#F59E0B"         # amber
+SUCCESS = "#10B981"        # green (kept for "delivered" status etc.)
+DANGER = "#7F1D1D"         # deep wine for "bad" indicators
+INFO = "#0891B2"           # teal as a cool counterpoint
+NEUTRAL = "#475569"        # slate
+
+DARK = "#1F2937"           # charcoal — used in hero gradient
+DARK_DEEP = "#111827"      # deepest charcoal
 
 CHART_PALETTE = [
-    "#1E40AF",
-    "#F59E0B",
-    "#06B6D4",
-    "#10B981",
-    "#EF4444",
-    "#A855F7",
-    "#64748B",
-    "#F97316",
+    "#DC2626",  # ember red
+    "#F59E0B",  # amber
+    "#1F2937",  # charcoal
+    "#F97316",  # orange
+    "#10B981",  # green
+    "#7C3AED",  # violet (rare contrast)
+    "#0891B2",  # teal
+    "#64748B",  # slate
 ]
 
 SEGMENT_COLORS = {
-    "Champions": "#F59E0B",
-    "Loyal Customers": "#1E40AF",
-    "Potential Loyalists": "#06B6D4",
-    "At Risk": "#EF4444",
-    "Lost": "#475569",
-    "Others": "#94A3B8",
+    "Champions": "#F59E0B",          # amber — top of the warm scale
+    "Loyal Customers": "#DC2626",    # ember red
+    "Potential Loyalists": "#F97316",  # orange
+    "At Risk": "#7C3AED",            # violet — visual contrast for "danger"
+    "Lost": "#1F2937",               # charcoal — out of the volcano palette
+    "Others": "#94A3B8",             # slate
 }
 
 
 _CSS = """
 <style>
     :root {
-        --primary: #1E40AF;
-        --primary-light: #3B82F6;
+        --primary: #DC2626;
+        --primary-light: #F87171;
+        --primary-deep: #991B1B;
         --accent: #F59E0B;
-        --bg-soft: #F8FAFC;
+        --dark: #1F2937;
+        --bg-soft: #FAFAF9;
         --card: #FFFFFF;
-        --border: #E2E8F0;
-        --text: #0F172A;
-        --muted: #64748B;
+        --border: #E7E5E4;
+        --text: #1C1917;
+        --muted: #57534E;
     }
 
     .main > div:first-child {
@@ -78,12 +83,12 @@ _CSS = """
     }
 
     .hero-card {
-        background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+        background: linear-gradient(135deg, #1F2937 0%, #DC2626 100%);
         color: white;
         padding: 1.75rem 2rem;
         border-radius: 16px;
         margin-bottom: 1.5rem;
-        box-shadow: 0 8px 24px rgba(30, 64, 175, 0.18);
+        box-shadow: 0 8px 24px rgba(220, 38, 38, 0.22);
     }
     .hero-card h1 {
         color: white !important;
@@ -133,16 +138,16 @@ _CSS = """
     }
 
     .insight {
-        background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+        background: linear-gradient(135deg, #FEF2F2 0%, #FEE2E2 100%);
         border-left: 4px solid var(--primary);
         padding: 0.9rem 1.1rem;
         border-radius: 8px;
         margin: 0.6rem 0 1.25rem 0;
         font-size: 0.93rem;
-        color: #1E3A8A;
+        color: #7F1D1D;
         line-height: 1.55;
     }
-    .insight strong { color: #1E3A8A; }
+    .insight strong { color: #7F1D1D; }
 
     .insight-warn {
         background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
@@ -178,7 +183,7 @@ _CSS = """
     }
 
     section[data-testid="stSidebar"] {
-        background: linear-gradient(180deg, #F8FAFC 0%, #EFF6FF 100%);
+        background: linear-gradient(180deg, #FAFAF9 0%, #FEF3C7 100%);
         border-right: 1px solid var(--border);
     }
     section[data-testid="stSidebar"] h1,
@@ -188,12 +193,12 @@ _CSS = """
     }
 
     .sidebar-brand {
-        background: linear-gradient(135deg, #1E40AF 0%, #3B82F6 100%);
+        background: linear-gradient(135deg, #1F2937 0%, #DC2626 100%);
         border-radius: 10px;
         padding: 1rem 1rem 0.9rem 1rem;
         margin: 0 0 1rem 0;
         color: white;
-        box-shadow: 0 4px 14px rgba(30, 64, 175, 0.18);
+        box-shadow: 0 4px 14px rgba(220, 38, 38, 0.22);
     }
     .sidebar-brand .accent {
         width: 28px; height: 4px; border-radius: 2px;
