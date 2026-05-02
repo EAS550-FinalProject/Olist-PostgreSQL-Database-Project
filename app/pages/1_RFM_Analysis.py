@@ -15,7 +15,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from db import run_query
+from db import run_query, to_csv_bytes
 from style import SEGMENT_COLORS, apply_style, caption, hero, insight
 
 st.set_page_config(
@@ -245,20 +245,23 @@ display["Avg Spend (BRL)"] = display["avg_total_spent"].apply(lambda v: f"R$ {v:
 display["Segment Revenue (BRL)"] = display["segment_revenue"].apply(lambda v: f"R$ {v:,.0f}")
 display["Recommended action"] = display["customer_segment"].map(SEGMENT_BLURBS).fillna("—")
 
-st.dataframe(
-    display[
-        [
-            "Segment",
-            "Customers",
-            "Avg Recency (days)",
-            "Avg Orders",
-            "Avg Spend (BRL)",
-            "Segment Revenue (BRL)",
-            "Recommended action",
-        ]
-    ],
-    hide_index=True,
-    use_container_width=True,
+table_cols = [
+    "Segment",
+    "Customers",
+    "Avg Recency (days)",
+    "Avg Orders",
+    "Avg Spend (BRL)",
+    "Segment Revenue (BRL)",
+    "Recommended action",
+]
+st.dataframe(display[table_cols], hide_index=True, use_container_width=True)
+
+st.download_button(
+    "Download segment data (CSV)",
+    data=to_csv_bytes(display[table_cols]),
+    file_name="rfm_segments.csv",
+    mime="text/csv",
+    help="Export the segment summary as CSV",
 )
 
 with st.expander("How is this calculated?"):

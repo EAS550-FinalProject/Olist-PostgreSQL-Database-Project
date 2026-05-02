@@ -17,7 +17,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from db import run_query
+from db import run_query, to_csv_bytes
 from style import ACCENT, PRIMARY, PRIMARY_LIGHT, SUCCESS, apply_style, caption, hero, insight
 
 st.set_page_config(
@@ -326,6 +326,7 @@ st.subheader("Payment Method Mix")
 caption("Brazilian e-commerce skews heavily toward credit cards and boletos.")
 payments = fetch_payment_mix(start_date, end_date)
 if not payments.empty:
+    payments_export = payments.copy()
     pay_chart = (
         alt.Chart(payments)
         .mark_arc(innerRadius=70, outerRadius=130, cornerRadius=4)
@@ -358,6 +359,12 @@ if not payments.empty:
             ).rename(columns={"payment_type": "Payment Type", "orders": "Orders", "total": "Total", "share": "Share"}),
             hide_index=True,
             use_container_width=True,
+        )
+        st.download_button(
+            "Download payment mix (CSV)",
+            data=to_csv_bytes(payments_export),
+            file_name=f"payment_mix_{start_date:%Y%m%d}_{end_date:%Y%m%d}.csv",
+            mime="text/csv",
         )
 
 st.divider()

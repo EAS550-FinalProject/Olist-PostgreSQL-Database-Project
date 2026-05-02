@@ -16,7 +16,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from db import run_query
+from db import run_query, to_csv_bytes
 from style import PRIMARY, apply_style, caption, hero, insight
 
 st.set_page_config(
@@ -234,17 +234,21 @@ with col2:
     )
     st.altair_chart(curve, use_container_width=True)
 
+raw_cols = [
+    "cohort_label",
+    "cohort_size",
+    "months_since_first_purchase",
+    "active_customers",
+    "retention_rate",
+]
+raw_df = df[raw_cols].rename(columns={"cohort_label": "cohort_month"})
+
 with st.expander("Raw cohort data"):
-    st.dataframe(
-        df[
-            [
-                "cohort_label",
-                "cohort_size",
-                "months_since_first_purchase",
-                "active_customers",
-                "retention_rate",
-            ]
-        ].rename(columns={"cohort_label": "cohort_month"}),
-        hide_index=True,
-        use_container_width=True,
-    )
+    st.dataframe(raw_df, hide_index=True, use_container_width=True)
+
+st.download_button(
+    "Download cohort data (CSV)",
+    data=to_csv_bytes(raw_df),
+    file_name=f"cohort_retention_{max_horizon}mo.csv",
+    mime="text/csv",
+)

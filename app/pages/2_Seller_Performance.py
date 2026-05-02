@@ -15,7 +15,7 @@ import altair as alt
 import pandas as pd
 import streamlit as st
 
-from db import run_query
+from db import run_query, to_csv_bytes
 from style import ACCENT, PRIMARY, PRIMARY_LIGHT, SUCCESS, apply_style, caption, hero, insight
 
 st.set_page_config(
@@ -268,10 +268,15 @@ leader_view["Review %ile"] = leader_view["review_percentile_pct"].apply(
 )
 leader_view["State rank"] = leader_view["state_revenue_rank"].astype(int)
 
-st.dataframe(
-    leader_view[
-        ["Rank", "Seller", "City", "State", "Orders", "Items", "Revenue (BRL)", "Avg Item Price", "Avg Review", "Review %ile", "State rank"]
-    ],
-    hide_index=True,
-    use_container_width=True,
+leader_cols = [
+    "Rank", "Seller", "City", "State", "Orders", "Items",
+    "Revenue (BRL)", "Avg Item Price", "Avg Review", "Review %ile", "State rank",
+]
+st.dataframe(leader_view[leader_cols], hide_index=True, use_container_width=True)
+
+st.download_button(
+    "Download leaderboard (CSV)",
+    data=to_csv_bytes(leader_view[leader_cols]),
+    file_name=f"seller_leaderboard_top{len(sellers)}.csv",
+    mime="text/csv",
 )
