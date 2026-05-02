@@ -7,7 +7,8 @@ gatherUsageStats = false
 
 [client]
 toolbarMode = "minimal"
-showSidebarNavigation = true
+# Hide Streamlit's auto page nav so we can render our own (under the brand block)
+showSidebarNavigation = false
 
 [theme]
 base = "light"

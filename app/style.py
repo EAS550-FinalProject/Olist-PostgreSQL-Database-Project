@@ -220,6 +220,15 @@ _CSS = """
         letter-spacing: 0.02em;
     }
 
+    .sidebar-section-label {
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        color: var(--muted);
+        margin: 0.25rem 0 0.4rem 0;
+    }
+
     .page-footer {
         border-top: 1px solid var(--border);
         margin-top: 2.5rem;
@@ -330,8 +339,16 @@ def note(text: str, label: str = "What this means") -> None:
     )
 
 
+_PAGES = [
+    ("Overview.py", "Overview"),
+    ("pages/1_RFM_Analysis.py", "RFM Analysis"),
+    ("pages/2_Seller_Performance.py", "Seller Performance"),
+    ("pages/3_Cohort_Retention.py", "Cohort Retention"),
+]
+
+
 def brand_sidebar(tagline: str = "Phase 3 · Live BI Dashboard") -> None:
-    """Render the OLIST ANALYTICS brand block + a refresh button at the top of the sidebar."""
+    """Render the brand block, page nav, and a refresh button at the top of the sidebar."""
     st.sidebar.markdown(
         f"""
         <div class="sidebar-brand">
@@ -342,9 +359,19 @@ def brand_sidebar(tagline: str = "Phase 3 · Live BI Dashboard") -> None:
         """,
         unsafe_allow_html=True,
     )
+    # st.page_link requires an entrypoint context; skip when not available
+    # (e.g. headless AppTest invocations) so the page can still render.
+    try:
+        st.sidebar.markdown('<p class="sidebar-section-label">Pages</p>', unsafe_allow_html=True)
+        for path, label in _PAGES:
+            st.sidebar.page_link(path, label=label)
+        st.sidebar.markdown("<div style='height: 0.5rem'></div>", unsafe_allow_html=True)
+    except Exception:
+        pass
     if st.sidebar.button("Refresh data", use_container_width=True, help="Clear all cached queries and re-fetch from Neon"):
         st.cache_data.clear()
         st.rerun()
+    st.sidebar.divider()
 
 
 def footer() -> None:
