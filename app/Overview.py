@@ -42,7 +42,6 @@ st.set_page_config(
 apply_style()
 brand_sidebar("Phase 3 · Live BI Dashboard")
 
-
 @st.cache_data(ttl=600, show_spinner=False)
 def fetch_date_bounds() -> tuple[date, date]:
     df = run_query(
@@ -74,6 +73,7 @@ def fetch_kpis(start: date, end: date) -> pd.DataFrame:
         """,
         {"start": start, "end": end},
     )
+
 
 
 @st.cache_data(ttl=600, show_spinner=False)
