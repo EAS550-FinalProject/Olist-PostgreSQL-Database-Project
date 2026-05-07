@@ -1,4 +1,4 @@
-# Olist PostgreSQL Database Project (Phase 1 and Phase 2)
+# Olist PostgreSQL Database Project (Phase 1, Phase 2, and Phase 3)
 
 # Olist PostgreSQL Database Project (Phase 1)
 
