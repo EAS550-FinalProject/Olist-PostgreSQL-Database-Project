@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: olist-analytics
+    runtime: python
+    plan: free
+    branch: main
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app/Overview.py --server.port=$PORT --server.address=0.0.0.0 --server.headless=true --browser.gatherUsageStats=false
+    healthCheckPath: /_stcore/health
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: PYTHON_VERSION
+        value: "3.11"

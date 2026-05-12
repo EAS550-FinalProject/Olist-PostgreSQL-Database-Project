@@ -1,0 +1,19 @@
+[server]
+headless = true
+enableXsrfProtection = true
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"
+# Hide Streamlit's auto page nav so we can render our own (under the brand block)
+showSidebarNavigation = false
+
+[theme]
+base = "light"
+primaryColor = "#DC2626"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#FAFAF9"
+textColor = "#1C1917"
+font = "sans serif"

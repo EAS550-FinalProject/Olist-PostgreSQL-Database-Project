@@ -55,3 +55,22 @@ jobs:
         run: dbt test --profiles-dir .
         env:
           DBT_PASSWORD: ${{ secrets.DBT_PASSWORD }}
+
+  streamlit-smoke:
+    name: Streamlit App Smoke Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run app smoke test
+        run: python app/test_app.py
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

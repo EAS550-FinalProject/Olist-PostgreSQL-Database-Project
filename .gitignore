@@ -22,6 +22,9 @@ ENV/
 *.swp
 *.swo
 
+# Claude Code local settings
+.claude/
+claude.md
 
 
 final_audit_report.md
