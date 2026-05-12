@@ -101,6 +101,7 @@ def run_query(sql: str, params: dict | None = None) -> pd.DataFrame:
     raise last_exc  # type: ignore[misc]
 
 
+
 @st.cache_data(ttl=600, show_spinner=False)
 def run_sql_file(path: str) -> pd.DataFrame:
     with open(path, "r", encoding="utf-8") as f:
