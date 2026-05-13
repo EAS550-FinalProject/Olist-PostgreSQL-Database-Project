@@ -1,10 +1,3 @@
-"""Shared visual style for the Olist Analytics dashboard.
-
-Defines the project palette, an Altair theme, and a CSS bundle that gets
-injected on every page. Keeping this in one place means a tweak here flows
-through every page.
-"""
-
 from __future__ import annotations
 
 from datetime import datetime
@@ -16,7 +9,7 @@ import streamlit as st
 PRIMARY = "#DC2626"        # ember red
 PRIMARY_LIGHT = "#F87171"  # softer red for gradients
 ACCENT = "#F59E0B"         # amber
-SUCCESS = "#10B981"        # green (kept for "delivered" status etc.)
+SUCCESS = "#10B981"        # green 
 DANGER = "#7F1D1D"         # deep wine for "bad" indicators
 INFO = "#0891B2"           # teal as a cool counterpoint
 NEUTRAL = "#475569"        # slate
@@ -30,7 +23,7 @@ CHART_PALETTE = [
     "#1F2937",  # charcoal
     "#F97316",  # orange
     "#10B981",  # green
-    "#7C3AED",  # violet (rare contrast)
+    "#7C3AED",  # violet
     "#0891B2",  # teal
     "#64748B",  # slate
 ]
@@ -302,7 +295,6 @@ def _olist_altair_theme() -> dict:
 
 
 def apply_style() -> None:
-    """Inject CSS and register the Altair theme. Call once at the top of every page."""
     st.markdown(_CSS, unsafe_allow_html=True)
     alt.themes.register("olist", _olist_altair_theme)
     alt.themes.enable("olist")
@@ -332,7 +324,6 @@ def caption(text: str) -> None:
 
 
 def note(text: str, label: str = "Note") -> None:
-    """Interpretation note shown directly below a chart."""
     st.markdown(
         f'<div class="data-note"><span class="label">{label}</span>{text}</div>',
         unsafe_allow_html=True,
@@ -348,7 +339,6 @@ _PAGES = [
 
 
 def brand_sidebar(tagline: str = "Phase 3 · Live BI Dashboard") -> None:
-    """Render the brand block, page nav, and a refresh button at the top of the sidebar."""
     st.sidebar.markdown(
         f"""
         <div class="sidebar-brand">
@@ -359,8 +349,7 @@ def brand_sidebar(tagline: str = "Phase 3 · Live BI Dashboard") -> None:
         """,
         unsafe_allow_html=True,
     )
-    # st.page_link requires an entrypoint context; skip when not available
-    # (e.g. headless AppTest invocations) so the page can still render.
+    
     try:
         st.sidebar.markdown('<p class="sidebar-section-label">Pages</p>', unsafe_allow_html=True)
         for path, label in _PAGES:
@@ -375,7 +364,6 @@ def brand_sidebar(tagline: str = "Phase 3 · Live BI Dashboard") -> None:
 
 
 def footer() -> None:
-    """Page-level footer with attribution and live render timestamp."""
     now = datetime.now().strftime("%Y-%m-%d %H:%M")
     st.markdown(
         f"""

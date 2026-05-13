@@ -1,16 +1,3 @@
-"""End-to-end smoke test for the Streamlit dashboard.
-
-Uses streamlit.testing.v1.AppTest to actually execute every page against
-the live Neon database (DATABASE_URL must be set). Fails on any uncaught
-exception in any page.
-
-Run locally:
-    python -m app.test_app
-
-In CI, this is wrapped by .github/workflows/ci.yml and skipped if
-DATABASE_URL is not configured as a secret.
-"""
-
 from __future__ import annotations
 
 import os
