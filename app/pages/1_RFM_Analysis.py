@@ -1,9 +1,3 @@
-"""RFM (Recency, Frequency, Monetary) customer segmentation.
-
-Mirrors the Phase 2 analytical query queries/rfm_analysis.sql but lets the
-user adjust segment thresholds and re-runs against live data.
-"""
-
 from __future__ import annotations
 
 import sys

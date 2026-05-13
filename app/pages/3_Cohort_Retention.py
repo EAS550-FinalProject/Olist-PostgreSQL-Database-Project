@@ -1,10 +1,3 @@
-"""Monthly cohort retention heatmap.
-
-Mirrors queries/cohort_retention.sql, rendered as a heatmap of retention
-percentages with cohort month on the y-axis and months-since-first-purchase
-on the x-axis.
-"""
-
 from __future__ import annotations
 
 import sys
@@ -118,8 +111,7 @@ df["cohort_label"] = pd.to_datetime(df["cohort_month"]).dt.strftime("%Y-%m")
 cohorts_count = df["cohort_month"].nunique()
 total_customers = int(df.drop_duplicates("cohort_month")["cohort_size"].sum())
 
-# Stats are computed from cohorts large enough to be meaningful (>= 50 customers)
-# so single-customer outliers don't drive the headline numbers.
+
 MIN_COHORT_FOR_STATS = 50
 meaningful = df[df["cohort_size"] >= MIN_COHORT_FOR_STATS]
 month_1 = meaningful.loc[meaningful["months_since_first_purchase"] == 1, "retention_rate"]
@@ -166,9 +158,7 @@ heatmap_df = df[
     (df["months_since_first_purchase"] > 0) & (df["cohort_size"] >= MIN_COHORT_SIZE)
 ].copy()
 
-# Olist is highly transactional — meaningful repeat rates are tiny (0.0–1.0%).
-# Color scale auto-fits to the actual data so contrast is visible instead of
-# washed out by an arbitrary upper bound.
+
 if not heatmap_df.empty:
     color_max = max(float(heatmap_df["retention_rate"].max()) * 1.1, 0.5)
 else:
@@ -201,7 +191,7 @@ heatmap = (
     .properties(height=620)
 )
 
-# Show every value (Olist values are small and we want to see them all)
+#Show every value
 label_df = heatmap_df[heatmap_df["retention_rate"] > 0].copy()
 text = (
     alt.Chart(label_df)

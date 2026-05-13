@@ -1,9 +1,3 @@
-"""Seller performance leaderboard.
-
-Mirrors queries/seller_performance.sql but exposes a state filter and a
-leaderboard size widget so the user can drill into geographic performance.
-"""
-
 from __future__ import annotations
 
 import sys
