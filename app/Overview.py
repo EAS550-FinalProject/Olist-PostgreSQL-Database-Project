@@ -1,10 +1,3 @@
-"""Olist Analytics — Overview page.
-
-Top-level KPIs and trend visualizations sourced from the dbt mart layer
-(fact_order_items joined to dim_dates / dim_products). The date range slider
-filters every chart and KPI on this page.
-"""
-
 from __future__ import annotations
 
 import sys

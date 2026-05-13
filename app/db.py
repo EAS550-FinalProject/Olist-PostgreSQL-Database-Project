@@ -1,12 +1,3 @@
-"""Database access for the Streamlit app.
-
-Connects to Neon Postgres via SQLAlchemy with a small connection pool tuned
-for Neon's free tier (idle compute pauses after 5 minutes). Engine is cached
-with @st.cache_resource so the pool is shared across reruns within a session;
-query functions cache results with @st.cache_data so the dashboard does not
-re-hit Neon on every widget interaction.
-"""
-
 from __future__ import annotations
 
 import logging
@@ -24,9 +15,6 @@ load_dotenv()
 
 _log = logging.getLogger(__name__)
 
-# Neon free tier suspends compute after 5 min of idle; first query after that
-# triggers a cold start that can take 5–10 seconds. We retry transient
-# connection errors so the user (and the demo grader) never sees a stack trace.
 _MAX_ATTEMPTS = 4
 _BASE_DELAY = 1.0
 
@@ -58,7 +46,6 @@ def get_engine() -> Engine:
 
 
 def _is_transient(exc: BaseException) -> bool:
-    """True for the kinds of errors that come from Neon being asleep / network blips."""
     if isinstance(exc, OperationalError):
         return True
     if isinstance(exc, DBAPIError):
@@ -98,7 +85,7 @@ def run_query(sql: str, params: dict | None = None) -> pd.DataFrame:
                 continue
             raise
     # Unreachable but satisfies type checkers.
-    raise last_exc  # type: ignore[misc]
+    raise last_exc
 
 
 
@@ -109,5 +96,4 @@ def run_sql_file(path: str) -> pd.DataFrame:
 
 
 def to_csv_bytes(df: pd.DataFrame) -> bytes:
-    """Helper for st.download_button — returns UTF-8 CSV bytes for any DataFrame."""
     return df.to_csv(index=False).encode("utf-8")
