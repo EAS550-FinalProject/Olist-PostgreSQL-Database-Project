@@ -400,7 +400,7 @@ Phase 3 turns the analytics layer from Phase 2 into a user-facing BI dashboard. 
 ## Live Application
 
 * **Public URL:** [https://olist-analytics-zalz.onrender.com/](https://olist-analytics-zalz.onrender.com/)
-* **Demo video:** _link to the unlisted YouTube end-to-end demo_
+* **Demo video:** [https://www.youtube.com/watch?v=iDsl5ldybNw](https://www.youtube.com/watch?v=iDsl5ldybNw)
 
 > Render's free tier spins the service down after ~15 minutes of inactivity, so the first request after a quiet period can take up to 60 seconds (cold start). Subsequent requests are fast.
 
